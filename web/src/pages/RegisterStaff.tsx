@@ -12,6 +12,10 @@ const RegisterStaff = () => {
     setLoading(true);
     try {
       const token = localStorage.getItem('token');
+
+      // ADD THIS LINE TO DEBUG:
+      console.log("SENDING TOKEN:", token); 
+      console.log("ROLE IN STORAGE:", localStorage.getItem('role'));
       // SDD Requirement: Use Bearer Token for restricted endpoints [cite: 211, 254]
       await axios.post('http://localhost:8080/api/v1/auth/register/staff', formData, {
         headers: { Authorization: `Bearer ${token}` }

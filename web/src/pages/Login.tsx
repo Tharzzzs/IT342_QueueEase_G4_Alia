@@ -1,30 +1,67 @@
 import React, { useState } from 'react';
 import { login } from '../api/auth';
 import { useNavigate, Link } from 'react-router-dom';
+import axios from 'axios';
+import { auth, googleProvider } from '../firebase'; // Import from step 2
+import { signInWithPopup } from 'firebase/auth';
 
 const Login = () => {
   const [creds, setCreds] = useState({ email: '', password: '' });
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
     try {
       const res = await login(creds);
       
-      // Store essential data as per SDD requirements [cite: 37, 109, 326]
       localStorage.setItem('token', res.data.accessToken); 
-      localStorage.setItem('role', res.data.role); // Store the role (ADMIN, STAFF, USER)
+      localStorage.setItem('role', res.data.role);
       localStorage.setItem('email', res.data.email);
 
-      // Role-based redirection logic [cite: 30, 116]
       if (res.data.role === 'ADMIN' || res.data.role === 'STAFF') {
         navigate('/admin/dashboard');
       } else {
         navigate('/customer/home');
       }
     } catch (err: any) {
-      // Handles AUTH-001 error code defined in SDD [cite: 272, 276]
       alert(err.response?.data?.message || "Invalid credentials");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // NEW: Google OAuth Handler
+  const handleGoogleLogin = async () => {
+    try {
+      // 1. Trigger Google Popup
+      const result = await signInWithPopup(auth, googleProvider);
+      
+      // 2. Get the Firebase ID Token
+      const idToken = await result.user.getIdToken();
+      
+      // 3. Send token to your Spring Boot backend for verification
+      const res = await axios.post('http://localhost:8080/api/v1/auth/google', {
+        token: idToken,
+        email: result.user.email,
+        firstname: result.user.displayName?.split(' ')[0] || '',
+        lastname: result.user.displayName?.split(' ').slice(1).join(' ') || ''
+      });
+
+      // 4. Store your custom backend JWT and route the user
+      localStorage.setItem('token', res.data.accessToken); 
+      localStorage.setItem('role', res.data.role);
+      localStorage.setItem('email', res.data.email);
+
+      if (res.data.role === 'ADMIN' || res.data.role === 'STAFF') {
+        navigate('/admin/dashboard');
+      } else {
+        navigate('/customer/home');
+      }
+    } catch (err: any) {
+      console.error("Google Login Error:", err);
+      alert("Google sign-in failed. Please try again.");
     }
   };
 
@@ -38,15 +75,22 @@ const Login = () => {
                  onChange={(e) => setCreds({...creds, email: e.target.value.toLowerCase().trim()})} />
           <input type="password" placeholder="Password" required className="form-input"
                  onChange={(e) => setCreds({...creds, password: e.target.value})} />
-          <button type="submit" className="btn-primary">LOGIN</button>
+          <button type="submit" disabled={loading} className="btn-primary">
+            {loading ? 'LOGGING IN...' : 'LOGIN'}
+          </button>
         </form>
         
-        {/* Google OAuth Option as per Mobile Wireframes [cite: 373, 381] */}
         <div className="relative my-6 flex items-center justify-center">
           <span className="absolute inset-x-0 h-px bg-gray-300"></span>
           <span className="relative px-4 bg-white text-sm text-gray-500">OR</span>
         </div>
-        <button className="w-full flex items-center justify-center gap-2 border border-gray-300 py-2.5 rounded-lg hover:bg-gray-50 transition-colors">
+        
+        {/* NEW: Attached onClick handler to the Google button */}
+        <button 
+          type="button" 
+          onClick={handleGoogleLogin}
+          className="w-full flex items-center justify-center gap-2 border border-gray-300 py-2.5 rounded-lg hover:bg-gray-50 transition-colors"
+        >
           <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="G" className="w-5 h-5" />
           Continue with Google
         </button>
