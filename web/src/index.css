@@ -2,24 +2,33 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --primary-blue: #2563eb;
-  --bg-gray: #f9fafb;
-}
-
-body {
-  @apply bg-gray-50 text-gray-900;
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
-}
-
 @layer components {
+  /* Perfectly centers the card and adds a subtle background gradient */
+  .auth-page-wrapper {
+    @apply min-h-screen w-full flex items-center justify-center p-4 sm:p-8;
+    background: radial-gradient(circle at center, #f8fafc 0%, #f1f5f9 100%);
+  }
+
+  /* The container card with a smooth entry animation */
   .auth-card {
-    @apply bg-white p-8 rounded-xl shadow-lg w-full max-w-md border border-gray-100;
+    @apply w-full max-w-md bg-white rounded-[2.5rem] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)] 
+    border border-gray-100 p-8 sm:p-10 transition-all duration-500 animate-in fade-in zoom-in-95;
   }
+
+  /* Modern input fields with soft focus rings */
   .form-input {
-    @apply w-full px-4 py-2.5 mt-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all;
+    @apply w-full px-5 py-4 bg-gray-50 border border-gray-200 rounded-2xl text-gray-700 transition-all duration-200 
+           focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none placeholder:text-gray-400;
   }
+
+  /* Bold, app-style primary buttons */
   .btn-primary {
-    @apply w-full bg-blue-600 text-white py-3 rounded-lg font-bold hover:bg-blue-700 transition-colors mt-6;
+    @apply w-full bg-blue-600 text-white py-4 rounded-2xl font-bold tracking-wide transition-all duration-300 
+           hover:bg-blue-700 hover:shadow-xl hover:shadow-blue-500/30 active:scale-[0.98] disabled:bg-blue-300;
+  }
+
+  /* The "OR" divider line */
+  .social-divider {
+    @apply relative my-8 flex items-center justify-center;
   }
 }
