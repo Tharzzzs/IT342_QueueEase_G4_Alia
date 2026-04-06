@@ -4,41 +4,72 @@ import { useNavigate, Link } from 'react-router-dom';
 
 const Register = () => {
   const [formData, setFormData] = useState({ firstname: '', lastname: '', email: '', password: '' });
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
     try {
-      // Backend handles normalization and role assignment 
       await register(formData);
       alert("Registration Successful! Please log in.");
       navigate('/login');
     } catch (err: any) {
-      // Specifically handles DB-002: Duplicate Email [cite: 268, 283]
       alert(err.response?.data?.message || "Registration Failed");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-gray-50">
+    <div className="auth-page-wrapper">
       <div className="auth-card">
-        <h2 className="text-3xl font-extrabold text-blue-600 text-center mb-2">QueueEase</h2>
-        <p className="text-center text-gray-500 mb-8">Create your account</p>
+        <div className="text-center mb-8">
+            <h2 className="text-3xl font-black text-gray-900 tracking-tight">Create Account</h2>
+            <p className="text-gray-500 mt-2 font-medium">Start managing your time better</p>
+        </div>
+
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <input type="text" placeholder="First Name" required className="form-input" 
-                   onChange={(e) => setFormData({...formData, firstname: e.target.value})} />
-            <input type="text" placeholder="Last Name" required className="form-input"
-                   onChange={(e) => setFormData({...formData, lastname: e.target.value})} />
+          <div className="grid grid-cols-2 gap-3">
+            <input 
+                type="text" 
+                placeholder="First" 
+                required 
+                className="form-input px-4" 
+                onChange={(e) => setFormData({...formData, firstname: e.target.value})} 
+            />
+            <input 
+                type="text" 
+                placeholder="Last" 
+                required 
+                className="form-input px-4"
+                onChange={(e) => setFormData({...formData, lastname: e.target.value})} 
+            />
           </div>
-          <input type="email" placeholder="Email" required className="form-input"
-                 onChange={(e) => setFormData({...formData, email: e.target.value.toLowerCase().trim()})} />
-          <input type="password" placeholder="Password" required className="form-input"
-                 onChange={(e) => setFormData({...formData, password: e.target.value})} />
-          <button type="submit" className="btn-primary">REGISTER</button>
+
+          <input 
+            type="email" 
+            placeholder="Email Address" 
+            required 
+            className="form-input"
+            onChange={(e) => setFormData({...formData, email: e.target.value.toLowerCase().trim()})} 
+          />
+
+          <input 
+            type="password" 
+            placeholder="Create Password" 
+            required 
+            className="form-input"
+            onChange={(e) => setFormData({...formData, password: e.target.value})} 
+          />
+
+          <button type="submit" disabled={loading} className="btn-primary mt-2">
+            {loading ? 'Creating Account...' : 'Get Started'}
+          </button>
         </form>
-        <p className="mt-6 text-center text-sm text-gray-600">
-          Already have an account? <Link to="/login" className="text-blue-600 font-semibold hover:underline">Login</Link>
+
+        <p className="mt-8 text-center text-sm text-gray-500">
+          Already a member? <Link to="/login" className="text-blue-600 font-bold hover:underline ml-1">Log in</Link>
         </p>
       </div>
     </div>

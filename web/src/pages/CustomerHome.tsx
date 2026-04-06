@@ -18,7 +18,7 @@ const CustomerHome = () => {
         </div>
       </header>
 
-      {/* Discovery - SDD Requirement [cite: 386] */}
+      {/* Discovery - SDD Requirement  */}
       <h2 className="text-xl font-bold mb-4">Find Services</h2>
       <input 
         type="text" 
@@ -32,10 +32,10 @@ const CustomerHome = () => {
           <div key={center} className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm flex justify-between items-center hover:shadow-md transition-shadow">
             <div>
               <p className="font-bold text-lg">{center}</p>
-              <p className="text-sm text-gray-500">Estimated wait: ~20 minutes [cite: 126]</p>
+              <p className="text-sm text-gray-500">Estimated wait: ~20 minutes</p>
             </div>
             <button className="bg-blue-600 text-white px-6 py-2 rounded-xl font-bold hover:bg-blue-700 transition-colors">
-              Join Queue [cite: 71, 149]
+              Join Queue
             </button>
           </div>
         ))}

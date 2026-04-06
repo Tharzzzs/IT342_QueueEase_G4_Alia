@@ -78,33 +78,13 @@ public class AuthController {
     @PostMapping("/google")
     public ResponseEntity<?> googleLogin(@RequestBody Map<String, String> payload) {
         try {
-            // NOTE: In a production app, you should verify payload.get("token") using Firebase Admin SDK.
-            // For now, we extract the email and find/create the user.
-            String email = payload.get("email").toLowerCase().trim();
+            // 1. Get the raw JWT token string from the React frontend
+            String idTokenString = payload.get("token");
 
-            // Check if user exists
-            var query = db.collection("users").whereEqualTo("email", email).get().get();
-            User user;
+            // 2. Delegate everything to the AuthService (Verification + DB check/create)
+            User user = authService.processGoogleLogin(idTokenString);
 
-            if (query.isEmpty()) {
-                // Auto-register new Google users as standard USER
-                user = User.builder()
-                        .email(email)
-                        .firstname(payload.get("firstname"))
-                        .lastname(payload.get("lastname"))
-                        .role("USER")
-                        .createdAt(java.time.Instant.now().toString())
-                        .build();
-
-                String newId = db.collection("users").add(user).get().getId();
-                user.setId(newId);
-            } else {
-                var doc = query.getDocuments().get(0);
-                user = doc.toObject(User.class);
-                user.setId(doc.getId());
-            }
-
-            // Generate your custom QueueEase token
+            // 3. Generate your app's JWT based on the verified user
             String accessToken = jwtUtils.generateToken(user.getEmail(), user.getRole());
 
             return ResponseEntity.ok(Map.of(
@@ -114,8 +94,10 @@ public class AuthController {
             ));
 
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("message", "Google Authentication Failed"));
+            // Print stack trace to your IntelliJ console so you can see why it's failing
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("message", "Google Authentication Failed: " + e.getMessage()));
         }
     }
     @PostMapping("/login")
