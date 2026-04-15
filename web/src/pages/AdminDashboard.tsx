@@ -1,97 +1,137 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import Sidebar from '../components/Sidebar';
+import { subscribeToServiceCenters, type ServiceCenter } from '../api/serviceCenter';
+import { getTotalInQueue, getServedTodayCount } from '../api/queue';
 
 const AdminDashboard = () => {
-  const navigate = useNavigate();
   const role = localStorage.getItem('role');
+  const [centers, setCenters] = useState<ServiceCenter[]>([]);
+  const [activeCenters, setActiveCenters] = useState(0);
+  const [peopleInQueue, setPeopleInQueue] = useState(0);
+  const [servedToday, setServedToday] = useState(0);
+  const [loading, setLoading] = useState(true);
 
-  const handleLogout = () => {
-    localStorage.clear();
-    navigate('/login');
-  };
+  useEffect(() => {
+    // Subscribe to service centers
+    const unsub = subscribeToServiceCenters((data) => {
+      setCenters(data);
+      setActiveCenters(data.filter((c) => c.isActive).length);
+    });
+
+    // Load queue metrics
+    const loadMetrics = async () => {
+      try {
+        const [queueCount, servedCount] = await Promise.all([
+          getTotalInQueue(),
+          getServedTodayCount(),
+        ]);
+        setPeopleInQueue(queueCount);
+        setServedToday(servedCount);
+      } catch (err) {
+        console.error('Failed to load metrics:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadMetrics();
+    // Refresh metrics every 30 seconds
+    const interval = setInterval(loadMetrics, 30000);
+
+    return () => {
+      unsub();
+      clearInterval(interval);
+    };
+  }, []);
 
   return (
-    <div className="flex min-h-screen bg-gray-100">
-      {/* Sidebar - SDD Navigation [cite: 177] */}
-      <div className="w-64 bg-white shadow-md p-6 flex flex-col">
-        <h1 className="text-xl font-bold text-blue-600 mb-8">QueueEase</h1>
-        <nav className="space-y-4 flex-1">
-          <div className="text-blue-600 font-semibold cursor-pointer p-2 rounded-lg bg-blue-50">
-            Dashboard
-          </div>
-          <div className="text-gray-600 hover:text-blue-600 cursor-pointer p-2 hover:bg-gray-50 transition-colors">
-            Service Centers
-          </div>
-          <div className="text-gray-600 hover:text-blue-600 cursor-pointer p-2 hover:bg-gray-50 transition-colors">
-            Live Monitor
-          </div>
-          
-          {/* Admin-only sections [cite: 30, 88, 114] */}
-          {role === 'ADMIN' && (
-            <>
-              <div className="pt-4 border-t border-gray-100">
-                <p className="text-xs font-bold text-gray-400 uppercase mb-2 ml-2">Administration</p>
-                <div 
-                  onClick={() => navigate('/admin/register-staff')}
-                  className="text-gray-600 hover:text-blue-600 cursor-pointer p-2 hover:bg-blue-50 rounded-lg transition-colors font-medium"
-                >
-                  + Register Staff
-                </div>
-                <div className="text-gray-600 hover:text-blue-600 cursor-pointer p-2 hover:bg-blue-50 rounded-lg transition-colors font-medium">
-                  User Management
-                </div>
-              </div>
-            </>
-          )}
-        </nav>
-        
-        <button 
-          onClick={handleLogout} 
-          className="mt-auto text-red-500 font-medium hover:bg-red-50 p-2 rounded-lg transition-colors text-left"
-        >
-          Logout
-        </button>
-      </div>
+    <div className="admin-layout">
+      <Sidebar role={role} />
 
-      {/* Main Content - SDD Wireframe Metrics [cite: 333, 339, 341] */}
-      <div className="flex-1 p-8 overflow-y-auto">
-        <header className="mb-8 flex justify-between items-center">
-          <h2 className="text-2xl font-bold text-gray-800">Dashboard Overview</h2>
-          <div className="text-sm text-gray-500 bg-white px-4 py-2 rounded-full shadow-sm border">
-            Logged in as: <span className="font-bold text-blue-600">{role}</span>
+      {/* Main Content */}
+      <div className="admin-main">
+        <header className="admin-header">
+          <div>
+            <h2 className="admin-page-title">Dashboard Overview</h2>
+            <p className="admin-page-subtitle">Real-time system metrics</p>
+          </div>
+          <div className="header-role-pill">
+            Logged in as: <span className="header-role-value">{role}</span>
           </div>
         </header>
-        
-        {/* Metric Cards [cite: 332, 337] */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-            <p className="text-sm text-gray-400 uppercase font-bold mb-1">Active Centers</p>
-            <p className="text-3xl font-bold text-gray-800">12</p>
+
+        {/* Metric Cards */}
+        <div className="metrics-grid">
+          <div className="metric-card metric-blue">
+            <div className="metric-icon">🏢</div>
+            <div>
+              <p className="metric-label">Active Centers</p>
+              <p className="metric-value">{loading ? '...' : activeCenters}</p>
+            </div>
           </div>
-          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-            <p className="text-sm text-gray-400 uppercase font-bold mb-1">People in Queue</p>
-            <p className="text-3xl font-bold text-gray-800">48</p>
+          <div className="metric-card metric-amber">
+            <div className="metric-icon">👥</div>
+            <div>
+              <p className="metric-label">People in Queue</p>
+              <p className="metric-value">{loading ? '...' : peopleInQueue}</p>
+            </div>
           </div>
-          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-            <p className="text-sm text-gray-400 uppercase font-bold mb-1">Served Today</p>
-            <p className="text-3xl font-bold text-gray-800">156</p>
+          <div className="metric-card metric-green">
+            <div className="metric-icon">✅</div>
+            <div>
+              <p className="metric-label">Served Today</p>
+              <p className="metric-value">{loading ? '...' : servedToday}</p>
+            </div>
           </div>
-          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-            <p className="text-sm text-gray-400 uppercase font-bold mb-1">System Health</p>
-            <p className="text-3xl font-bold text-green-500">99.9%</p>
+          <div className="metric-card metric-purple">
+            <div className="metric-icon">📊</div>
+            <div>
+              <p className="metric-label">Total Centers</p>
+              <p className="metric-value">{loading ? '...' : centers.length}</p>
+            </div>
           </div>
         </div>
 
-        {/* Global Activity Log - SDD Requirement [cite: 334, 346] */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-          <div className="p-6 border-b border-gray-100">
-            <h3 className="font-bold text-gray-800">Global Activity Log</h3>
+        {/* Service Centers Overview */}
+        <div className="dashboard-section">
+          <div className="section-header">
+            <h3 className="section-title">Service Centers</h3>
           </div>
-          <div className="p-6">
-            <div className="text-center py-10 text-gray-400">
-              <p>No recent activity to display.</p>
-              <p className="text-sm">Real-time Firestore listeners will populate this in Phase 2[cite: 495].</p>
-            </div>
+          <div className="dashboard-table-wrap">
+            {centers.length === 0 ? (
+              <div className="empty-state-sm">
+                <p>No service centers yet. Create one to get started.</p>
+              </div>
+            ) : (
+              <table className="dashboard-table">
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Category</th>
+                    <th>Address</th>
+                    <th>Hours</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {centers.slice(0, 5).map((center) => (
+                    <tr key={center.id}>
+                      <td className="font-semibold">{center.name}</td>
+                      <td>
+                        <span className="category-pill">{center.category}</span>
+                      </td>
+                      <td className="text-muted">{center.address}</td>
+                      <td className="text-muted">{center.operatingHours}</td>
+                      <td>
+                        <span className={`status-badge ${center.isActive ? 'status-active' : 'status-inactive'}`}>
+                          {center.isActive ? 'Active' : 'Inactive'}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
           </div>
         </div>
       </div>

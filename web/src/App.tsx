@@ -6,6 +6,9 @@ import Register from './pages/Register';
 import AdminDashboard from './pages/AdminDashboard';
 import CustomerHome from './pages/CustomerHome';
 import RegisterStaff from './pages/RegisterStaff';
+import ServiceCenters from './pages/ServiceCenters';
+import QueueMonitor from './pages/QueueMonitor';
+import QueueStatus from './pages/QueueStatus';
 
 // Role-Based Guard Interface
 interface Props {
@@ -42,10 +45,31 @@ function App() {
             </ProtectedRoute>
           } />
 
+          {/* Service Centers Management */}
+          <Route path="/admin/service-centers" element={
+            <ProtectedRoute allowedRoles={['ADMIN', 'STAFF']}>
+              <ServiceCenters />
+            </ProtectedRoute>
+          } />
+
+          {/* Queue Monitor */}
+          <Route path="/admin/queue-monitor" element={
+            <ProtectedRoute allowedRoles={['ADMIN', 'STAFF']}>
+              <QueueMonitor />
+            </ProtectedRoute>
+          } />
+
           {/* Customer Home */}
           <Route path="/customer/home" element={
             <ProtectedRoute allowedRoles={['USER']}>
               <CustomerHome />
+            </ProtectedRoute>
+          } />
+
+          {/* Customer Queue Status */}
+          <Route path="/customer/queue-status" element={
+            <ProtectedRoute allowedRoles={['USER']}>
+              <QueueStatus />
             </ProtectedRoute>
           } />
 

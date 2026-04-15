@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { UserPlus, ArrowLeft } from 'lucide-react';
 
 const RegisterStaff = () => {
   const [formData, setFormData] = useState({ firstname: '', lastname: '', email: '', password: '' });
@@ -12,11 +13,6 @@ const RegisterStaff = () => {
     setLoading(true);
     try {
       const token = localStorage.getItem('token');
-
-      // ADD THIS LINE TO DEBUG:
-      console.log("SENDING TOKEN:", token); 
-      console.log("ROLE IN STORAGE:", localStorage.getItem('role'));
-      // SDD Requirement: Use Bearer Token for restricted endpoints [cite: 211, 254]
       await axios.post('http://localhost:8080/api/v1/auth/register/staff', formData, {
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -30,30 +26,61 @@ const RegisterStaff = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
-      <div className="max-w-md mx-auto bg-white p-8 rounded-2xl shadow-sm border border-gray-200">
-        <h2 className="text-2xl font-bold text-gray-800 mb-2">Register New Staff</h2>
-        <p className="text-sm text-gray-500 mb-6">Create an account for service center personnel.</p>
-        
-        <form onSubmit={handleStaffSubmit} className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <input type="text" placeholder="First Name" required className="form-input" 
-                   onChange={(e) => setFormData({...formData, firstname: e.target.value})} />
-            <input type="text" placeholder="Last Name" required className="form-input"
-                   onChange={(e) => setFormData({...formData, lastname: e.target.value})} />
+    <div className="auth-page-wrapper">
+      <div className="absolute top-[-10%] right-[-5%] w-[50%] h-[50%] bg-blue-400/10 rounded-full blur-[120px] pointer-events-none"></div>
+      <div className="absolute bottom-[-10%] left-[-5%] w-[50%] h-[50%] bg-indigo-400/10 rounded-full blur-[120px] pointer-events-none"></div>
+      
+      <div className="auth-card !max-w-[500px]">
+          <button 
+            onClick={() => navigate(-1)} 
+            className="flex items-center gap-2 text-gray-400 hover:text-blue-600 font-bold text-sm mb-8 transition-colors group"
+          >
+            <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
+            Back to Dashboard
+          </button>
+
+          <div className="flex items-center gap-5 mb-10">
+            <div className="w-16 h-16 bg-gradient-to-tr from-blue-600 to-indigo-600 text-white rounded-2xl flex items-center justify-center shadow-xl shadow-blue-500/30">
+              <UserPlus size={28} strokeWidth={2.5} />
+            </div>
+            <div>
+              <h2 className="text-2xl font-black text-gray-900 tracking-tight">Add Staff</h2>
+              <p className="text-sm text-gray-500 font-medium">Create a new service center account.</p>
+            </div>
           </div>
-          <input type="email" placeholder="Staff Email" required className="form-input"
-                 onChange={(e) => setFormData({...formData, email: e.target.value.toLowerCase().trim()})} />
-          <input type="password" placeholder="Temporary Password" required className="form-input"
-                 onChange={(e) => setFormData({...formData, password: e.target.value})} />
           
-          <div className="flex gap-4 mt-6">
-            <button type="button" onClick={() => navigate(-1)} className="flex-1 px-4 py-2 border rounded-lg hover:bg-gray-50">Cancel</button>
-            <button type="submit" disabled={loading} className="flex-1 bg-blue-600 text-white py-2 rounded-lg font-bold hover:bg-blue-700 disabled:bg-gray-400">
-              {loading ? "Registering..." : "Add Staff"}
-            </button>
-          </div>
-        </form>
+          <form onSubmit={handleStaffSubmit} className="space-y-6">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <label className="text-[13px] font-bold text-gray-500 uppercase tracking-wider ml-1">First Name</label>
+                <input type="text" placeholder="John" required className="form-input" 
+                       onChange={(e) => setFormData({...formData, firstname: e.target.value})} />
+              </div>
+              <div className="space-y-2">
+                <label className="text-[13px] font-bold text-gray-500 uppercase tracking-wider ml-1">Last Name</label>
+                <input type="text" placeholder="Doe" required className="form-input"
+                       onChange={(e) => setFormData({...formData, lastname: e.target.value})} />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-[13px] font-bold text-gray-500 uppercase tracking-wider ml-1">Staff Email</label>
+              <input type="email" placeholder="staff@business.com" required className="form-input"
+                     onChange={(e) => setFormData({...formData, email: e.target.value.toLowerCase().trim()})} />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-[13px] font-bold text-gray-500 uppercase tracking-wider ml-1">Temporary Password</label>
+              <input type="password" placeholder="••••••••" required className="form-input"
+                     onChange={(e) => setFormData({...formData, password: e.target.value})} />
+            </div>
+            
+            <div className="pt-6">
+              <button type="submit" disabled={loading} className="btn-primary">
+                {loading ? "Registering..." : "Confirm & Create Account"}
+              </button>
+            </div>
+          </form>
       </div>
     </div>
   );

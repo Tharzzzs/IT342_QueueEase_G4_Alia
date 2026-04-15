@@ -16,4 +16,5 @@ public class AuthResponse {
     private String userId;
     private String message;
     private boolean success;
+    private String firebaseToken;
 }
