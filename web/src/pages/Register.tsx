@@ -23,54 +23,69 @@ const Register = () => {
 
   return (
     <div className="auth-page-wrapper">
-      <div className="auth-card">
-        <div className="text-center mb-8">
-            <h2 className="text-3xl font-black text-gray-900 tracking-tight">Create Account</h2>
-            <p className="text-gray-500 mt-2 font-medium">Start managing your time better</p>
-        </div>
+      <div className="absolute top-[-10%] right-[-5%] w-[50%] h-[50%] bg-blue-400/20 rounded-full blur-[120px] pointer-events-none"></div>
+      <div className="absolute bottom-[-10%] left-[-5%] w-[50%] h-[50%] bg-purple-400/20 rounded-full blur-[120px] pointer-events-none"></div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid grid-cols-2 gap-3">
-            <input 
-                type="text" 
-                placeholder="First" 
-                required 
-                className="form-input px-4" 
-                onChange={(e) => setFormData({...formData, firstname: e.target.value})} 
-            />
-            <input 
-                type="text" 
-                placeholder="Last" 
-                required 
-                className="form-input px-4"
-                onChange={(e) => setFormData({...formData, lastname: e.target.value})} 
-            />
+      <div className="auth-card">
+          <div className="text-center mb-10">
+              <h2 className="text-3xl font-black text-gray-900 tracking-tight">Create Account</h2>
+              <p className="text-gray-500 mt-2 font-medium">Join QueueEase and skip the wait.</p>
           </div>
 
-          <input 
-            type="email" 
-            placeholder="Email Address" 
-            required 
-            className="form-input"
-            onChange={(e) => setFormData({...formData, email: e.target.value.toLowerCase().trim()})} 
-          />
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <label className="text-[13px] font-bold text-gray-500 uppercase tracking-wider ml-1">First Name</label>
+                <input 
+                    type="text" 
+                    placeholder="John" 
+                    required 
+                    className="form-input" 
+                    onChange={(e) => setFormData({...formData, firstname: e.target.value})} 
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-[13px] font-bold text-gray-500 uppercase tracking-wider ml-1">Last Name</label>
+                <input 
+                    type="text" 
+                    placeholder="Doe" 
+                    required 
+                    className="form-input"
+                    onChange={(e) => setFormData({...formData, lastname: e.target.value})} 
+                />
+              </div>
+            </div>
 
-          <input 
-            type="password" 
-            placeholder="Create Password" 
-            required 
-            className="form-input"
-            onChange={(e) => setFormData({...formData, password: e.target.value})} 
-          />
+            <div className="space-y-2">
+              <label className="text-[13px] font-bold text-gray-500 uppercase tracking-wider ml-1">Email Address</label>
+              <input 
+                type="email" 
+                placeholder="name@company.com" 
+                required 
+                className="form-input"
+                onChange={(e) => setFormData({...formData, email: e.target.value.toLowerCase().trim()})} 
+              />
+            </div>
 
-          <button type="submit" disabled={loading} className="btn-primary mt-2">
-            {loading ? 'Creating Account...' : 'Get Started'}
-          </button>
-        </form>
+            <div className="space-y-2">
+              <label className="text-[13px] font-bold text-gray-500 uppercase tracking-wider ml-1">Password</label>
+              <input 
+                type="password" 
+                placeholder="••••••••" 
+                required 
+                className="form-input"
+                onChange={(e) => setFormData({...formData, password: e.target.value})} 
+              />
+            </div>
 
-        <p className="mt-8 text-center text-sm text-gray-500">
-          Already a member? <Link to="/login" className="text-blue-600 font-bold hover:underline ml-1">Log in</Link>
-        </p>
+            <button type="submit" disabled={loading} className="btn-primary !mt-8">
+              {loading ? 'Creating Account...' : 'Get Started'}
+            </button>
+          </form>
+
+          <p className="mt-10 text-center text-[15px] text-gray-500 font-medium">
+            Already have an account? <Link to="/login" className="text-blue-600 font-bold hover:underline decoration-2 underline-offset-4 ml-1">Log in</Link>
+          </p>
       </div>
     </div>
   );

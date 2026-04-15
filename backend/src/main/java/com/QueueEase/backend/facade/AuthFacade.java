@@ -13,6 +13,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import com.QueueEase.backend.event.UserRegisteredEvent;
 
 import java.util.Map;
+import com.google.firebase.auth.FirebaseAuth;
 
 @Service
 public class AuthFacade {
@@ -42,12 +43,14 @@ public class AuthFacade {
         User user = standardAuthStrategy.authenticate(credentials);
         if (user != null) {
             String token = jwtUtils.generateToken(user.getEmail(), user.getRole());
+            String firebaseToken = FirebaseAuth.getInstance().createCustomToken(user.getId());
             return AuthResponse.builder()
                     .success(true)
                     .accessToken(token)
                     .role(user.getRole())
                     .email(user.getEmail())
                     .userId(user.getId())
+                    .firebaseToken(firebaseToken)
                     .message("Login successful")
                     .build();
         }
@@ -57,12 +60,14 @@ public class AuthFacade {
     public AuthResponse googleLogin(Map<String, String> credentials) throws Exception {
         User user = googleAuthStrategy.authenticate(credentials);
         String token = jwtUtils.generateToken(user.getEmail(), user.getRole());
+        String firebaseToken = FirebaseAuth.getInstance().createCustomToken(user.getId());
         return AuthResponse.builder()
                     .success(true)
                     .accessToken(token)
                     .role(user.getRole())
                     .email(user.getEmail())
                     .userId(user.getId())
+                    .firebaseToken(firebaseToken)
                     .message("Google login successful")
                     .build();
     }
