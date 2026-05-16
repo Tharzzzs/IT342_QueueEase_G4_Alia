@@ -1,5 +1,9 @@
 package edu.alia.queueease
 
+import edu.alia.queueease.R
+import edu.alia.queueease.features.auth.LoginActivity
+import edu.alia.queueease.features.auth.RegisterActivity
+
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button

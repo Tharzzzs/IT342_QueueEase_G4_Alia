@@ -1,14 +1,14 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { GoogleOAuthProvider } from '@react-oauth/google'; // 1. Import the provider
-import Login from './pages/Login';
-import Register from './pages/Register';
-import AdminDashboard from './pages/AdminDashboard';
-import CustomerHome from './pages/CustomerHome';
-import RegisterStaff from './pages/RegisterStaff';
-import ServiceCenters from './pages/ServiceCenters';
-import QueueMonitor from './pages/QueueMonitor';
-import QueueStatus from './pages/QueueStatus';
+import Login from './features/auth/Login';
+import Register from './features/auth/Register';
+import AdminDashboard from './features/serviceCenter/AdminDashboard';
+import CustomerHome from './features/queue/CustomerHome';
+import RegisterStaff from './features/auth/RegisterStaff';
+import ServiceCenters from './features/serviceCenter/ServiceCenters';
+import QueueMonitor from './features/queue/QueueMonitor';
+import QueueStatus from './features/queue/QueueStatus';
 
 // Role-Based Guard Interface
 interface Props {
