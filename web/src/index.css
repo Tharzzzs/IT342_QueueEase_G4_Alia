@@ -1503,3 +1503,285 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* ========================================
+   STAFF ASSIGNMENT UI
+   ======================================== */
+
+.staff-assignment-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 0;
+  border-top: 1px solid var(--gray-100);
+  margin-bottom: 0.25rem;
+}
+
+.staff-assignment-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.staff-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.staff-dot-assigned {
+  background: var(--green-500);
+  box-shadow: 0 0 6px rgba(34, 197, 94, 0.4);
+}
+
+.staff-badge-name {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--gray-700);
+}
+
+.staff-badge-email {
+  display: block;
+  font-size: 0.7rem;
+  color: var(--gray-400);
+  font-weight: 500;
+}
+
+.staff-unassigned {
+  font-size: 0.8rem;
+  font-style: italic;
+  color: var(--gray-400);
+}
+
+.btn-assign {
+  background: var(--green-50);
+  color: var(--green-600);
+}
+
+.btn-assign:hover {
+  background: #dcfce7;
+}
+
+.assign-modal-subtitle {
+  font-size: 0.85rem;
+  color: var(--gray-500);
+  margin-bottom: 1rem;
+  line-height: 1.5;
+}
+
+/* ========================================
+   ACCESS DENIED / NO ASSIGNMENT STATE
+   ======================================== */
+
+.access-denied-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 4rem 2rem;
+  min-height: 400px;
+}
+
+.access-denied-icon {
+  font-size: 4rem;
+  margin-bottom: 1.5rem;
+  animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.access-denied-title {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--gray-800);
+  margin-bottom: 0.75rem;
+}
+
+.access-denied-text {
+  font-size: 0.95rem;
+  color: var(--gray-500);
+  line-height: 1.7;
+  max-width: 420px;
+}
+
+/* ========================================
+   STAFF DASHBOARD
+   ======================================== */
+
+.staff-quick-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.staff-action-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.25rem 1.5rem;
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-xl);
+  cursor: pointer;
+  transition: all 0.3s;
+  text-align: left;
+  width: 100%;
+  font-family: inherit;
+}
+
+.staff-action-card:hover {
+  border-color: var(--blue-500);
+  box-shadow: 0 4px 20px rgba(99, 102, 241, 0.12);
+  transform: translateY(-2px);
+}
+
+.staff-action-icon {
+  font-size: 2rem;
+  width: 52px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--blue-50);
+  border-radius: 14px;
+  flex-shrink: 0;
+}
+
+.staff-action-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--gray-800);
+  margin-bottom: 0.125rem;
+}
+
+.staff-action-desc {
+  font-size: 0.825rem;
+  color: var(--gray-500);
+}
+
+.staff-action-arrow {
+  margin-left: auto;
+  font-size: 1.25rem;
+  color: var(--gray-400);
+  transition: transform 0.2s;
+}
+
+.staff-action-card:hover .staff-action-arrow {
+  transform: translateX(4px);
+  color: var(--blue-600);
+}
+
+.staff-center-info-card {
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-xl);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.text-muted {
+  color: var(--gray-400);
+  font-size: 0.825rem;
+}
+
+.font-semibold {
+  font-weight: 600;
+}
+
+/* Customer Tabs & Favorites */
+.customer-tabs {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid var(--gray-200);
+  padding-bottom: 0.5rem;
+}
+
+.tab-btn {
+  background: none;
+  border: none;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--gray-500);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+}
+
+.tab-btn:hover {
+  color: var(--gray-800);
+}
+
+.tab-btn.tab-active {
+  color: var(--blue-600);
+  border-bottom-color: var(--blue-600);
+}
+
+.center-top-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-favorite {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: var(--warning-400);
+  cursor: pointer;
+  transition: transform 0.2s, color 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  line-height: 1;
+}
+
+.btn-favorite:hover {
+  transform: scale(1.2);
+  color: var(--warning-500);
+}
+
+/* History Table Styles */
+.history-table-container {
+  background: white;
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--gray-200);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  margin-top: 1rem;
+}
+
+.history-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.history-table th,
+.history-table td {
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 1px solid var(--gray-100);
+}
+
+.history-table th {
+  background: var(--gray-50);
+  font-weight: 600;
+  color: var(--gray-600);
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.history-table tbody tr:hover {
+  background: var(--gray-50);
+}

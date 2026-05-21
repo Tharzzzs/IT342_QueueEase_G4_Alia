@@ -36,14 +36,23 @@ const Sidebar: React.FC<SidebarProps> = ({ role }) => {
 
       <nav className="sidebar-nav">
         {navItem('Dashboard', '/admin/dashboard', '📊')}
-        {navItem('Service Centers', '/admin/service-centers', '🏢')}
-        {navItem('Queue Monitor', '/admin/queue-monitor', '📋')}
 
+        {/* ADMIN: manage centers & staff, no queue monitor */}
         {role === 'ADMIN' && (
-          <div className="sidebar-section">
-            <p className="sidebar-section-title">Administration</p>
-            {navItem('Register Staff', '/admin/register-staff', '👤')}
-          </div>
+          <>
+            {navItem('Service Centers', '/admin/service-centers', '🏢')}
+            <div className="sidebar-section">
+              <p className="sidebar-section-title">Administration</p>
+              {navItem('Register Staff', '/admin/register-staff', '👤')}
+            </div>
+          </>
+        )}
+
+        {/* STAFF: queue monitor only */}
+        {role === 'STAFF' && (
+          <>
+            {navItem('Queue Monitor', '/admin/queue-monitor', '📋')}
+          </>
         )}
       </nav>
 

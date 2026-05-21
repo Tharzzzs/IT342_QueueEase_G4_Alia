@@ -6,7 +6,11 @@ import {
   updateServiceCenter,
   deleteServiceCenter,
   subscribeToServiceCenters,
+  assignStaffToCenter,
+  unassignStaffFromCenter,
+  getAllStaffUsers,
   type ServiceCenter,
+  type StaffUser,
 } from './serviceCenter';
 
 const CATEGORIES = ['Medical', 'Government', 'Banking', 'Utilities', 'Education', 'Other'];
@@ -33,6 +37,14 @@ const ServiceCenters = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const { toasts, addToast, removeToast } = useToast();
 
+  // Staff assignment modal state
+  const [showAssignModal, setShowAssignModal] = useState(false);
+  const [assignCenterId, setAssignCenterId] = useState<string | null>(null);
+  const [assignCenterName, setAssignCenterName] = useState('');
+  const [selectedStaffEmail, setSelectedStaffEmail] = useState('');
+  const [staffList, setStaffList] = useState<StaffUser[]>([]);
+  const [assignLoading, setAssignLoading] = useState(false);
+
   useEffect(() => {
     const unsub = subscribeToServiceCenters(
       (data) => {
@@ -43,8 +55,16 @@ const ServiceCenters = () => {
         addToast('error', 'Failed to load service centers: ' + (error.message || 'Check Firestore rules.'));
       }
     );
+    
+    // Load staff users for assignment modal
+    if (role === 'ADMIN') {
+      getAllStaffUsers().then((users) => {
+        setStaffList(users);
+      });
+    }
+
     return () => unsub();
-  }, []);
+  }, [role]);
 
   const resetForm = () => {
     setForm({ ...emptyForm, createdBy: email });
@@ -124,6 +144,58 @@ const ServiceCenters = () => {
     c.category.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
+  // Staff assignment handlers
+  const openAssignModal = (center: ServiceCenter) => {
+    setAssignCenterId(center.id!);
+    setAssignCenterName(center.name);
+    setSelectedStaffEmail('');
+    setShowAssignModal(true);
+  };
+
+  const handleAssignStaff = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!assignCenterId) return;
+    if (!selectedStaffEmail) {
+      addToast('error', 'Please select a staff member.');
+      return;
+    }
+
+    const selectedStaff = staffList.find(s => s.email === selectedStaffEmail);
+    if (!selectedStaff) {
+      addToast('error', 'Selected staff member not found.');
+      return;
+    }
+
+    // Check if this center already has staff
+    const center = centers.find((c) => c.id === assignCenterId);
+    if (center?.assignedStaffEmail) {
+      addToast('error', `This center already has staff assigned (${center.assignedStaffEmail}). Unassign them first.`);
+      return;
+    }
+
+    setAssignLoading(true);
+    try {
+      const staffName = selectedStaff.name || `${selectedStaff.firstname || ''} ${selectedStaff.lastname || ''}`.trim() || 'Staff User';
+      await assignStaffToCenter(assignCenterId, selectedStaff.email, staffName);
+      addToast('success', `Staff "${staffName}" assigned to "${assignCenterName}" successfully!`);
+      setShowAssignModal(false);
+    } catch (err: any) {
+      addToast('error', err.message || 'Failed to assign staff.');
+    } finally {
+      setAssignLoading(false);
+    }
+  };
+
+  const handleUnassignStaff = async (center: ServiceCenter) => {
+    if (!window.confirm(`Remove staff "${center.assignedStaffName || center.assignedStaffEmail}" from "${center.name}"?`)) return;
+    try {
+      await unassignStaffFromCenter(center.id!);
+      addToast('success', `Staff unassigned from "${center.name}".`);
+    } catch (err: any) {
+      addToast('error', err.message || 'Failed to unassign staff.');
+    }
+  };
+
   return (
     <div className="admin-layout">
       <Sidebar role={role} />
@@ -185,12 +257,38 @@ const ServiceCenters = () => {
                     <span className="detail-value">{center.maxCapacity}</span>
                   </div>
                 </div>
+
+                {/* Staff Assignment Section */}
+                <div className="staff-assignment-section">
+                  <span className="detail-label">👤 Assigned Staff</span>
+                  {center.assignedStaffEmail ? (
+                    <div className="staff-assignment-badge">
+                      <span className="staff-dot staff-dot-assigned"></span>
+                      <div>
+                        <span className="staff-badge-name">{center.assignedStaffName || 'Staff'}</span>
+                        <span className="staff-badge-email">{center.assignedStaffEmail}</span>
+                      </div>
+                    </div>
+                  ) : (
+                    <span className="text-muted staff-unassigned">No staff assigned</span>
+                  )}
+                </div>
+
                 {role === 'ADMIN' && (
                   <div className="center-card-actions">
                     <button onClick={() => handleEdit(center)} className="btn-action btn-edit">Edit</button>
                     <button onClick={() => handleToggleActive(center)} className="btn-action btn-toggle">
                       {center.isActive ? 'Deactivate' : 'Activate'}
                     </button>
+                    {center.assignedStaffEmail ? (
+                      <button onClick={() => handleUnassignStaff(center)} className="btn-action btn-delete">
+                        Unassign
+                      </button>
+                    ) : (
+                      <button onClick={() => openAssignModal(center)} className="btn-action btn-assign">
+                        Assign Staff
+                      </button>
+                    )}
                     <button onClick={() => handleDelete(center)} className="btn-action btn-delete">Delete</button>
                   </div>
                 )}
@@ -199,7 +297,7 @@ const ServiceCenters = () => {
           )}
         </div>
 
-        {/* Modal */}
+        {/* Create/Edit Center Modal */}
         {showModal && (
           <div className="modal-overlay" onClick={() => resetForm()}>
             <div className="modal-card" onClick={(e) => e.stopPropagation()}>
@@ -275,6 +373,49 @@ const ServiceCenters = () => {
                   <button type="button" onClick={resetForm} className="btn-secondary">Cancel</button>
                   <button type="submit" disabled={loading} className="btn-primary-sm">
                     {loading ? 'Saving...' : editingId ? 'Update Center' : 'Create Center'}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* Assign Staff Modal */}
+        {showAssignModal && (
+          <div className="modal-overlay" onClick={() => setShowAssignModal(false)}>
+            <div className="modal-card" onClick={(e) => e.stopPropagation()}>
+              <h3 className="modal-title">Assign Staff to "{assignCenterName}"</h3>
+              <p className="assign-modal-subtitle">
+                Select a registered staff member from the list. Each center can only have one staff member.
+              </p>
+              <form onSubmit={handleAssignStaff} className="modal-form">
+                <div className="form-group">
+                  <label className="form-label">Select Staff *</label>
+                  {staffList.length === 0 ? (
+                    <p className="text-muted">No staff accounts found. Please register a staff member first.</p>
+                  ) : (
+                    <select
+                      value={selectedStaffEmail}
+                      onChange={(e) => setSelectedStaffEmail(e.target.value)}
+                      className="form-input"
+                      required
+                    >
+                      <option value="">-- Choose Staff --</option>
+                      {staffList.map((staff) => {
+                        const name = staff.name || `${staff.firstname || ''} ${staff.lastname || ''}`.trim();
+                        return (
+                          <option key={staff.email} value={staff.email}>
+                            {name ? `${name} (${staff.email})` : staff.email}
+                          </option>
+                        );
+                      })}
+                    </select>
+                  )}
+                </div>
+                <div className="modal-actions">
+                  <button type="button" onClick={() => setShowAssignModal(false)} className="btn-secondary">Cancel</button>
+                  <button type="submit" disabled={assignLoading || staffList.length === 0} className="btn-primary-sm">
+                    {assignLoading ? 'Assigning...' : 'Assign Staff'}
                   </button>
                 </div>
               </form>

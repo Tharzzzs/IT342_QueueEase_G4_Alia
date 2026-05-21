@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Toast, { useToast } from '../../components/Toast';
-import { subscribeToServiceCenters, type ServiceCenter } from '../serviceCenter/serviceCenter';
+import { subscribeToServiceCenters, toggleFavoriteCenter, subscribeToFavorites, type ServiceCenter } from '../serviceCenter/serviceCenter';
 import { joinQueue, getUserActiveQueue, getWaitingCount } from './queue';
 
 const CustomerHome = () => {
@@ -13,6 +13,8 @@ const CustomerHome = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [joining, setJoining] = useState<string | null>(null);
   const [hasActiveQueue, setHasActiveQueue] = useState(false);
+  const [favoriteIds, setFavoriteIds] = useState<string[]>([]);
+  const [filterTab, setFilterTab] = useState<'all' | 'favorites'>('all');
   const { toasts, addToast, removeToast } = useToast();
 
   useEffect(() => {
@@ -27,8 +29,17 @@ const CustomerHome = () => {
         }
       });
     });
-    return () => unsub();
-  }, []);
+    
+    // Subscribe to favorites
+    const unsubFavs = subscribeToFavorites(email, (ids) => {
+      setFavoriteIds(ids);
+    });
+
+    return () => {
+      unsub();
+      unsubFavs();
+    };
+  }, [email]);
 
   // Check if user already has an active queue
   useEffect(() => {
@@ -64,16 +75,28 @@ const CustomerHome = () => {
     }
   };
 
+  const handleToggleFavorite = async (e: React.MouseEvent, centerId: string) => {
+    e.stopPropagation();
+    const isFav = favoriteIds.includes(centerId);
+    try {
+      await toggleFavoriteCenter(email, centerId, isFav);
+    } catch (err: any) {
+      addToast('error', err.message || 'Failed to update favorites.');
+    }
+  };
+
   const handleLogout = () => {
     localStorage.clear();
     window.location.href = '/login';
   };
 
-  const filtered = centers.filter((c) =>
-    c.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    c.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    c.address.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filtered = centers.filter((c) => {
+    const matchesSearch = c.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          c.category.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                          c.address.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesTab = filterTab === 'all' || (filterTab === 'favorites' && c.id && favoriteIds.includes(c.id));
+    return matchesSearch && matchesTab;
+  });
 
   return (
     <div className="customer-page">
@@ -81,6 +104,9 @@ const CustomerHome = () => {
       <header className="customer-header">
         <h1 className="customer-brand" onClick={() => navigate('/customer/home')}>QueueEase</h1>
         <div className="customer-header-right">
+          <button onClick={() => navigate('/customer/history')} className="btn-secondary btn-sm" style={{ marginRight: '10px' }}>
+            🕒 History
+          </button>
           {hasActiveQueue && (
             <button onClick={() => navigate('/customer/queue-status')} className="btn-queue-status">
               📋 My Queue
@@ -122,13 +148,29 @@ const CustomerHome = () => {
           </div>
         )}
 
+        {/* Tabs */}
+        <div className="customer-tabs">
+          <button 
+            className={`tab-btn ${filterTab === 'all' ? 'tab-active' : ''}`}
+            onClick={() => setFilterTab('all')}
+          >
+            All Centers
+          </button>
+          <button 
+            className={`tab-btn ${filterTab === 'favorites' ? 'tab-active' : ''}`}
+            onClick={() => setFilterTab('favorites')}
+          >
+            ★ My Favorites
+          </button>
+        </div>
+
         {/* Service Centers List */}
-        <h3 className="customer-section-title">Available Service Centers</h3>
+        <h3 className="customer-section-title">{filterTab === 'all' ? 'Available Service Centers' : 'Favorite Service Centers'}</h3>
         <div className="customer-centers-list">
           {filtered.length === 0 ? (
             <div className="empty-state">
-              <p className="empty-state-icon">🏢</p>
-              <p className="empty-state-text">No service centers available.</p>
+              <p className="empty-state-icon">{filterTab === 'favorites' ? '⭐' : '🏢'}</p>
+              <p className="empty-state-text">{filterTab === 'favorites' ? 'You have no favorite centers yet.' : 'No service centers available.'}</p>
             </div>
           ) : (
             filtered.map((center) => (
@@ -136,9 +178,18 @@ const CustomerHome = () => {
                 <div className="customer-center-info">
                   <div className="customer-center-top">
                     <span className="center-card-category">{center.category}</span>
-                    <span className="queue-count-badge">
-                      {waitCounts[center.id!] || 0} in queue
-                    </span>
+                    <div className="center-top-right">
+                      <span className="queue-count-badge">
+                        {waitCounts[center.id!] || 0} in queue
+                      </span>
+                      <button 
+                        className="btn-favorite" 
+                        onClick={(e) => handleToggleFavorite(e, center.id!)}
+                        title={favoriteIds.includes(center.id!) ? "Remove from favorites" : "Add to favorites"}
+                      >
+                        {favoriteIds.includes(center.id!) ? '★' : '☆'}
+                      </button>
+                    </div>
                   </div>
                   <h4 className="customer-center-name">{center.name}</h4>
                   {center.description && (

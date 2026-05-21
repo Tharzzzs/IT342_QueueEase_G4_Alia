@@ -1,20 +1,24 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Toast, { useToast } from '../../components/Toast';
-import { subscribeToUserQueue, leaveQueue, type QueueEntry } from './queue';
+import { subscribeToUserQueueWithPosition, leaveQueue, type QueueEntry } from './queue';
 
 const QueueStatus = () => {
   const email = localStorage.getItem('email') || '';
   const navigate = useNavigate();
   const [queueEntry, setQueueEntry] = useState<QueueEntry | null>(null);
+  const [position, setPosition] = useState(0);
+  const [totalActive, setTotalActive] = useState(0);
   const [loading, setLoading] = useState(true);
   const [leaving, setLeaving] = useState(false);
   const { toasts, addToast, removeToast } = useToast();
 
   useEffect(() => {
     if (!email) return;
-    const unsub = subscribeToUserQueue(email, (entry) => {
+    const unsub = subscribeToUserQueueWithPosition(email, (entry, pos, total) => {
       setQueueEntry(entry);
+      setPosition(pos);
+      setTotalActive(total);
       setLoading(false);
     });
     return () => unsub();
@@ -98,7 +102,7 @@ const QueueStatus = () => {
           <div className="hero-badge">
             {isServing ? '🟢 NOW SERVING' : '⏳ IN QUEUE'}
           </div>
-          <div className="hero-number">#{queueEntry.queueNumber}</div>
+          <div className="hero-number">#{position || queueEntry.queueNumber}</div>
           <p className="hero-center">{queueEntry.serviceCenterName}</p>
         </div>
 
@@ -112,8 +116,14 @@ const QueueStatus = () => {
           </div>
           <div className="queue-detail-row">
             <span className="queue-detail-label">Queue Number</span>
-            <span className="queue-detail-value">#{queueEntry.queueNumber}</span>
+            <span className="queue-detail-value">#{position || queueEntry.queueNumber}</span>
           </div>
+          {queueEntry.status === 'WAITING' && totalActive > 0 && (
+            <div className="queue-detail-row">
+              <span className="queue-detail-label">Position in Queue</span>
+              <span className="queue-detail-value">{position} of {totalActive}</span>
+            </div>
+          )}
           <div className="queue-detail-row">
             <span className="queue-detail-label">Service Center</span>
             <span className="queue-detail-value">{queueEntry.serviceCenterName}</span>

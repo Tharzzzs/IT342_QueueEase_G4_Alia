@@ -50,6 +50,11 @@ const Login = () => {
         localStorage.setItem('token', data.accessToken);
         localStorage.setItem('role', data.role);
         localStorage.setItem('email', data.email);
+        if (data.firstname && data.lastname) {
+            localStorage.setItem('userName', `${data.firstname} ${data.lastname}`);
+        } else if (data.name) {
+            localStorage.setItem('userName', data.name);
+        }
     };
 
     const handleNavigation = (role: string) => {

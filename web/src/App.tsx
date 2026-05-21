@@ -9,6 +9,7 @@ import RegisterStaff from './features/auth/RegisterStaff';
 import ServiceCenters from './features/serviceCenter/ServiceCenters';
 import QueueMonitor from './features/queue/QueueMonitor';
 import QueueStatus from './features/queue/QueueStatus';
+import QueueHistory from './features/queue/QueueHistory';
 
 // Role-Based Guard Interface
 interface Props {
@@ -45,16 +46,16 @@ function App() {
             </ProtectedRoute>
           } />
 
-          {/* Service Centers Management */}
+          {/* Service Centers Management (Admin Only) */}
           <Route path="/admin/service-centers" element={
-            <ProtectedRoute allowedRoles={['ADMIN', 'STAFF']}>
+            <ProtectedRoute allowedRoles={['ADMIN']}>
               <ServiceCenters />
             </ProtectedRoute>
           } />
 
-          {/* Queue Monitor */}
+          {/* Queue Monitor (Staff Only) */}
           <Route path="/admin/queue-monitor" element={
-            <ProtectedRoute allowedRoles={['ADMIN', 'STAFF']}>
+            <ProtectedRoute allowedRoles={['STAFF']}>
               <QueueMonitor />
             </ProtectedRoute>
           } />
@@ -70,6 +71,13 @@ function App() {
           <Route path="/customer/queue-status" element={
             <ProtectedRoute allowedRoles={['USER']}>
               <QueueStatus />
+            </ProtectedRoute>
+          } />
+
+          {/* Customer Queue History */}
+          <Route path="/customer/history" element={
+            <ProtectedRoute allowedRoles={['USER']}>
+              <QueueHistory />
             </ProtectedRoute>
           } />
 

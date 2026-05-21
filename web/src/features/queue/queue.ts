@@ -26,12 +26,13 @@ export interface QueueEntry {
 
 const COLLECTION = 'queue_entries';
 
-// Generate next queue number for a service center (today only)
+// Generate next queue number based on current active (WAITING/SERVING) entries only
 const getNextQueueNumber = async (serviceCenterId: string): Promise<number> => {
   try {
     const q = query(
       collection(db, COLLECTION),
-      where('serviceCenterId', '==', serviceCenterId)
+      where('serviceCenterId', '==', serviceCenterId),
+      where('status', 'in', ['WAITING', 'SERVING'])
     );
     const snapshot = await getDocs(q);
     // Filter today's entries client-side
@@ -48,6 +49,30 @@ const getNextQueueNumber = async (serviceCenterId: string): Promise<number> => {
     console.error('Failed to get next queue number:', error);
     return Math.floor(Math.random() * 900) + 100; // Fallback random number
   }
+};
+
+// Compute dynamic display positions from active entries.
+// Returns a map of entryId → display position (1-indexed, continuous).
+// Entries are sorted by joinedAt so earliest joiner = position 1.
+export const computeDisplayPositions = (entries: QueueEntry[]): Map<string, number> => {
+  const positionMap = new Map<string, number>();
+  const activeEntries = entries
+    .filter((e) => e.status === 'WAITING' || e.status === 'SERVING')
+    .sort((a, b) => {
+      const aTime = a.joinedAt
+        ? (a.joinedAt.toDate ? a.joinedAt.toDate().getTime() : new Date(a.joinedAt).getTime())
+        : 0;
+      const bTime = b.joinedAt
+        ? (b.joinedAt.toDate ? b.joinedAt.toDate().getTime() : new Date(b.joinedAt).getTime())
+        : 0;
+      return aTime - bTime;
+    });
+  activeEntries.forEach((entry, index) => {
+    if (entry.id) {
+      positionMap.set(entry.id, index + 1);
+    }
+  });
+  return positionMap;
 };
 
 // Join a queue
@@ -165,9 +190,10 @@ export const getQueueByCenter = async (serviceCenterId: string): Promise<QueueEn
 };
 
 // Real-time subscription to a service center's queue
+// Callback now also receives a positionMap for dynamic display positions.
 export const subscribeToQueue = (
   serviceCenterId: string,
-  callback: (entries: QueueEntry[]) => void
+  callback: (entries: QueueEntry[], positionMap: Map<string, number>) => void
 ) => {
   const q = query(
     collection(db, COLLECTION),
@@ -180,13 +206,22 @@ export const subscribeToQueue = (
         id: d.id,
         ...d.data(),
       })) as QueueEntry[];
-      // Sort client-side
-      entries.sort((a, b) => a.queueNumber - b.queueNumber);
-      callback(entries);
+      // Sort by joinedAt for consistent ordering
+      entries.sort((a, b) => {
+        const aTime = a.joinedAt
+          ? (a.joinedAt.toDate ? a.joinedAt.toDate().getTime() : new Date(a.joinedAt).getTime())
+          : 0;
+        const bTime = b.joinedAt
+          ? (b.joinedAt.toDate ? b.joinedAt.toDate().getTime() : new Date(b.joinedAt).getTime())
+          : 0;
+        return aTime - bTime;
+      });
+      const positionMap = computeDisplayPositions(entries);
+      callback(entries, positionMap);
     },
     (error) => {
       console.error('Queue subscription error:', error);
-      callback([]);
+      callback([], new Map());
     }
   );
 };
@@ -234,6 +269,48 @@ export const subscribeToUserQueue = (
       callback(null);
     }
   );
+};
+
+// Subscribe to user's queue entry WITH dynamic position computed from the full queue.
+// Provides both the user's entry and their current position number.
+export const subscribeToUserQueueWithPosition = (
+  userEmail: string,
+  callback: (entry: QueueEntry | null, position: number, totalActive: number) => void
+) => {
+  // First, subscribe to the user's own entry
+  let currentEntry: QueueEntry | null = null;
+  let queueUnsub: (() => void) | null = null;
+
+  const userUnsub = subscribeToUserQueue(userEmail, (entry) => {
+    currentEntry = entry;
+
+    // Clean up previous queue subscription if service center changed
+    if (queueUnsub) {
+      queueUnsub();
+      queueUnsub = null;
+    }
+
+    if (!entry || !entry.serviceCenterId) {
+      callback(null, 0, 0);
+      return;
+    }
+
+    // Subscribe to the full queue for this service center to compute position
+    queueUnsub = subscribeToQueue(entry.serviceCenterId, (_entries, positionMap) => {
+      if (!currentEntry || !currentEntry.id) {
+        callback(null, 0, 0);
+        return;
+      }
+      const position = positionMap.get(currentEntry.id) || 0;
+      callback(currentEntry, position, positionMap.size);
+    });
+  });
+
+  // Return cleanup function
+  return () => {
+    userUnsub();
+    if (queueUnsub) queueUnsub();
+  };
 };
 
 // Get count of people served today (all centers)
@@ -287,5 +364,67 @@ export const getWaitingCount = async (serviceCenterId: string): Promise<number> 
   } catch (error) {
     console.error('Failed to get waiting count:', error);
     return 0;
+  }
+};
+
+// ==============================
+// HISTORY / TRANSACTION LOGS
+// ==============================
+
+// Get a customer's queue history
+export const getUserQueueHistory = async (userEmail: string): Promise<QueueEntry[]> => {
+  try {
+    const q = query(
+      collection(db, COLLECTION),
+      where('userEmail', '==', userEmail),
+      where('status', 'in', ['COMPLETED', 'CANCELLED', 'MISSED'])
+    );
+    const snapshot = await getDocs(q);
+    const entries = snapshot.docs.map((d) => ({
+      id: d.id,
+      ...d.data(),
+    })) as QueueEntry[];
+    // Sort by joinedAt descending (newest first)
+    return entries.sort((a, b) => {
+      const aTime = a.joinedAt ? (a.joinedAt.toDate ? a.joinedAt.toDate().getTime() : new Date(a.joinedAt).getTime()) : 0;
+      const bTime = b.joinedAt ? (b.joinedAt.toDate ? b.joinedAt.toDate().getTime() : new Date(b.joinedAt).getTime()) : 0;
+      return bTime - aTime;
+    });
+  } catch (error) {
+    console.error('Failed to get user queue history:', error);
+    return [];
+  }
+};
+
+// Get a service center's queue history (for staff)
+export const getCenterQueueHistory = async (serviceCenterId: string): Promise<QueueEntry[]> => {
+  try {
+    const q = query(
+      collection(db, COLLECTION),
+      where('serviceCenterId', '==', serviceCenterId),
+      where('status', 'in', ['COMPLETED', 'CANCELLED', 'MISSED'])
+    );
+    const snapshot = await getDocs(q);
+    // Filter to today's history only to avoid massive data loading for staff
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const entries = snapshot.docs
+      .map((d) => ({ id: d.id, ...d.data() } as QueueEntry))
+      .filter((e) => {
+        const time = e.completedAt || e.joinedAt;
+        if (!time) return false;
+        const date = time.toDate ? time.toDate() : new Date(time);
+        return date >= today;
+      });
+      
+    // Sort by completedAt descending
+    return entries.sort((a, b) => {
+      const aTime = a.completedAt ? (a.completedAt.toDate ? a.completedAt.toDate().getTime() : new Date(a.completedAt).getTime()) : 0;
+      const bTime = b.completedAt ? (b.completedAt.toDate ? b.completedAt.toDate().getTime() : new Date(b.completedAt).getTime()) : 0;
+      return bTime - aTime;
+    });
+  } catch (error) {
+    console.error('Failed to get center queue history:', error);
+    return [];
   }
 };
