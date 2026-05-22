@@ -27,4 +27,5 @@ public class CreateServiceCenterRequest {
     private String createdBy;
     private String assignedStaffEmail;
     private String assignedStaffName;
+    private String brandLogoUrl;
 }

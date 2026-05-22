@@ -10,6 +10,7 @@ import ServiceCenters from './features/serviceCenter/ServiceCenters';
 import QueueMonitor from './features/queue/QueueMonitor';
 import QueueStatus from './features/queue/QueueStatus';
 import QueueHistory from './features/queue/QueueHistory';
+import ProfilePage from './features/profile/ProfilePage';
 
 // Role-Based Guard Interface
 interface Props {
@@ -84,6 +85,12 @@ function App() {
           <Route path="/admin/register-staff" element={
             <ProtectedRoute allowedRoles={['ADMIN']}>
               <RegisterStaff />
+            </ProtectedRoute>
+          } />
+
+          <Route path="/profile" element={
+            <ProtectedRoute allowedRoles={['ADMIN', 'STAFF', 'USER']}>
+              <ProfilePage />
             </ProtectedRoute>
           } />
 

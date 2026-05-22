@@ -60,6 +60,9 @@ const Sidebar: React.FC<SidebarProps> = ({ role }) => {
           <span className="sidebar-role-dot"></span>
           {role}
         </div>
+        <button onClick={() => navigate('/profile')} className="sidebar-logout" style={{ marginBottom: '10px' }}>
+          <ClipboardList size={16} /> Profile
+        </button>
         <button onClick={handleLogout} className="sidebar-logout">
           <LogOut size={16} /> Logout
         </button>

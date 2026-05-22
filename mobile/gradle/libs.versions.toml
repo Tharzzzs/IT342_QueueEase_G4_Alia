@@ -19,6 +19,7 @@ datastorePreferences = "1.0.0"
 swiperefreshlayout = "1.1.0"
 fragmentKtx = "1.6.2"
 googleServices = "4.4.0"
+glide = "4.16.0"
 
 [libraries]
 # Core AndroidX
@@ -67,6 +68,9 @@ swiperefreshlayout = { group = "androidx.swiperefreshlayout", name = "swiperefre
 
 # Fragment KTX
 fragment-ktx = { group = "androidx.fragment", name = "fragment-ktx", version.ref = "fragmentKtx" }
+
+# Glide
+glide = { group = "com.github.bumptech.glide", name = "glide", version.ref = "glide" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

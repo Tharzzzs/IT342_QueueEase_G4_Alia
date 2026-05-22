@@ -19,8 +19,32 @@
         style="@style/QueueEase.Text.SectionTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="24dp"
+        android:layout_marginBottom="16dp"
         android:text="@string/create_center" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="16dp">
+
+        <ImageView
+            android:id="@+id/ivLogo"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:background="@color/gray_200"
+            android:scaleType="centerCrop"
+            android:layout_marginEnd="16dp"
+            android:contentDescription="Brand Logo" />
+
+        <Button
+            android:id="@+id/btnUploadLogo"
+            style="@style/QueueEase.Button.Outline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Upload Logo" />
+    </LinearLayout>
 
     <com.google.android.material.textfield.TextInputLayout
         style="@style/QueueEase.TextInput"

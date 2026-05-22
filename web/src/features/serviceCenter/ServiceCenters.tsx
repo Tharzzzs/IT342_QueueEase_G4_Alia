@@ -13,6 +13,8 @@ import {
   type ServiceCenter,
   type StaffUser,
 } from './serviceCenter';
+import { uploadFile } from '../profile/profile';
+import { ImagePlus } from 'lucide-react';
 
 const CATEGORIES = ['Medical', 'Government', 'Banking', 'Utilities', 'Education', 'Other'];
 
@@ -25,6 +27,7 @@ const emptyForm: Omit<ServiceCenter, 'id' | 'createdAt'> = {
   maxCapacity: 50,
   isActive: true,
   createdBy: '',
+  brandLogoUrl: '',
 };
 
 const ServiceCenters = () => {
@@ -34,6 +37,8 @@ const ServiceCenters = () => {
   const [showModal, setShowModal] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState({ ...emptyForm, createdBy: email });
+  const [logoFile, setLogoFile] = useState<File | null>(null);
+  const [logoPreview, setLogoPreview] = useState('');
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const { toasts, addToast, removeToast } = useToast();
@@ -62,6 +67,8 @@ const ServiceCenters = () => {
 
   const resetForm = () => {
     setForm({ ...emptyForm, createdBy: email });
+    setLogoFile(null);
+    setLogoPreview('');
     setEditingId(null);
     setShowModal(false);
   };
@@ -84,11 +91,17 @@ const ServiceCenters = () => {
     }
     setLoading(true);
     try {
+      let finalLogoUrl = form.brandLogoUrl || '';
+      if (logoFile) {
+        finalLogoUrl = await uploadFile(logoFile, 'logos');
+      }
+      const dataToSave = { ...form, brandLogoUrl: finalLogoUrl };
+
       if (editingId) {
-        await updateServiceCenter(editingId, form);
+        await updateServiceCenter(editingId, dataToSave);
         addToast('success', `"${form.name}" updated successfully.`);
       } else {
-        await createServiceCenter(form);
+        await createServiceCenter(dataToSave);
         addToast('success', `"${form.name}" created successfully.`);
       }
       resetForm();
@@ -109,7 +122,10 @@ const ServiceCenters = () => {
       maxCapacity: center.maxCapacity,
       isActive: center.isActive,
       createdBy: center.createdBy,
+      brandLogoUrl: center.brandLogoUrl || '',
     });
+    setLogoFile(null);
+    setLogoPreview(center.brandLogoUrl || '');
     setEditingId(center.id || null);
     setShowModal(true);
   };
@@ -226,7 +242,10 @@ const ServiceCenters = () => {
             filtered.map((center) => (
               <div key={center.id} className="center-card">
                 <div className="center-card-header">
-                  <div className="center-card-category">{center.category}</div>
+                  <div className="center-card-category">
+                    {center.brandLogoUrl && <img src={center.brandLogoUrl} alt="logo" style={{width: '24px', height: '24px', borderRadius: '4px', objectFit: 'cover', marginRight: '8px', display: 'inline-block', verticalAlign: 'middle'}} />}
+                    {center.category}
+                  </div>
                   <div className={`status-badge ${center.isActive ? 'status-active' : 'status-inactive'}`}>
                     {center.isActive ? 'Active' : 'Inactive'}
                   </div>
@@ -291,6 +310,35 @@ const ServiceCenters = () => {
             <div className="modal-card" onClick={(e) => e.stopPropagation()}>
               <h3 className="modal-title">{editingId ? 'Edit Service Center' : 'Create Service Center'}</h3>
               <form onSubmit={handleSubmit} className="modal-form">
+                
+                <div className="form-group" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                  <label className="form-label" style={{ alignSelf: 'flex-start' }}>Brand Logo</label>
+                  <div 
+                    style={{
+                      width: '100px', height: '100px', borderRadius: '8px', 
+                      backgroundColor: '#f3f4f6', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      overflow: 'hidden', border: '1px dashed #d1d5db', marginBottom: '10px'
+                    }}
+                  >
+                    {logoPreview ? (
+                      <img src={logoPreview} alt="Logo Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    ) : (
+                      <ImagePlus size={32} color="#9ca3af" />
+                    )}
+                  </div>
+                  <input 
+                    type="file" 
+                    accept="image/*" 
+                    onChange={(e) => {
+                      if (e.target.files && e.target.files[0]) {
+                        setLogoFile(e.target.files[0]);
+                        setLogoPreview(URL.createObjectURL(e.target.files[0]));
+                      }
+                    }} 
+                    className="form-input" 
+                  />
+                </div>
+
                 <div className="form-group">
                   <label className="form-label">Name *</label>
                   <input type="text" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="form-input" placeholder="e.g. City Medical Clinic" required />

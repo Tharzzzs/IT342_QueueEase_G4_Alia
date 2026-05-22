@@ -5,6 +5,8 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import android.view.View
+import com.bumptech.glide.Glide
 import edu.alia.queueease.R
 import edu.alia.queueease.core.models.ServiceCenter
 import edu.alia.queueease.databinding.ItemServiceCenterBinding
@@ -35,6 +37,13 @@ class ServiceCenterAdapter(
             binding.tvAddress.text = center.address
             binding.tvWaitingCount.text = item.waitingCount.toString()
             binding.tvEstWait.text = "~${item.waitingCount * 5}m" // Dummy calculation like web app
+            
+            if (!center.brandLogoUrl.isNullOrEmpty()) {
+                binding.ivLogo.visibility = View.VISIBLE
+                Glide.with(binding.root.context).load(center.brandLogoUrl).into(binding.ivLogo)
+            } else {
+                binding.ivLogo.visibility = View.GONE
+            }
 
             if (item.isFavorite) {
                 binding.ivFavorite.setImageResource(android.R.drawable.btn_star_big_on)

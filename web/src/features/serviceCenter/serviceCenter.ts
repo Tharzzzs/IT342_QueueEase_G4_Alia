@@ -25,6 +25,7 @@ export interface ServiceCenter {
   createdAt?: any;
   assignedStaffEmail?: string;
   assignedStaffName?: string;
+  brandLogoUrl?: string;
 }
 export interface StaffUser {
   id?: string;

@@ -108,6 +108,9 @@ const CustomerHome = () => {
               <ClipboardList size={16} /> My Queue
             </button>
           )}
+          <button onClick={() => navigate('/profile')} className="btn-secondary btn-sm" style={{ marginRight: '10px' }}>
+            Profile
+          </button>
           <span className="customer-email">{email}</span>
           <button onClick={handleLogout} className="customer-logout">Logout</button>
         </div>
@@ -170,7 +173,10 @@ const CustomerHome = () => {
               <div key={center.id} className="customer-center-card">
                 <div className="customer-center-info">
                   <div className="customer-center-top">
-                    <span className="center-card-category">{center.category}</span>
+                    <span className="center-card-category" style={{ display: 'flex', alignItems: 'center' }}>
+                      {center.brandLogoUrl && <img src={center.brandLogoUrl} alt="logo" style={{width: '24px', height: '24px', borderRadius: '4px', objectFit: 'cover', marginRight: '8px'}} />}
+                      {center.category}
+                    </span>
                     <div className="center-top-right">
                       <span className="queue-count-badge">
                         {waitCounts[center.id!] || 0} in queue

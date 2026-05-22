@@ -5,6 +5,8 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import android.view.View
+import com.bumptech.glide.Glide
 import edu.alia.queueease.R
 import edu.alia.queueease.core.models.ServiceCenter
 import edu.alia.queueease.databinding.ItemAdminServiceCenterBinding
@@ -31,6 +33,13 @@ class AdminServiceCenterAdapter(
         fun bind(center: ServiceCenter) {
             binding.tvName.text = center.name
             binding.tvCategory.text = center.category
+
+            if (!center.brandLogoUrl.isNullOrEmpty()) {
+                binding.ivLogo.visibility = View.VISIBLE
+                Glide.with(binding.root.context).load(center.brandLogoUrl).into(binding.ivLogo)
+            } else {
+                binding.ivLogo.visibility = View.GONE
+            }
 
             if (center.isActive) {
                 binding.tvStatus.text = "ACTIVE"

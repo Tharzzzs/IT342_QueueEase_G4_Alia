@@ -14,16 +14,34 @@
         android:layout_height="wrap_content"
         android:padding="16dp">
 
-        <TextView
-            android:id="@+id/tvCategory"
-            style="@style/QueueEase.Pill"
+        <LinearLayout
+            android:id="@+id/llCategory"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
             android:background="@drawable/bg_pill_category"
-            android:textColor="@color/blue_600"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="4dp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:text="Banking" />
+            app:layout_constraintTop_toTopOf="parent">
+            
+            <ImageView
+                android:id="@+id/ivLogo"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginEnd="6dp"
+                android:scaleType="centerCrop"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/tvCategory"
+                style="@style/QueueEase.Text.Caption"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/blue_600"
+                tools:text="Medical" />
+        </LinearLayout>
 
         <TextView
             android:id="@+id/tvStatus"

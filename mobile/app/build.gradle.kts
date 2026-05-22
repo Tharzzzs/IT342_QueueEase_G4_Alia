@@ -85,6 +85,9 @@ dependencies {
     // SwipeRefreshLayout
     implementation(libs.swiperefreshlayout)
 
+    // Glide
+    implementation("com.github.bumptech.glide:glide:4.16.0")
+
     // Unit Testing
     testImplementation(libs.junit)
 

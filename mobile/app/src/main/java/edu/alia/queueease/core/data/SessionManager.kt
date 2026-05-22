@@ -11,6 +11,7 @@ object SessionManager {
     private const val KEY_EMAIL = "email"
     private const val KEY_USER_NAME = "user_name"
     private const val KEY_USER_ID = "user_id"
+    private const val KEY_AVATAR_URL = "avatar_url"
 
     private lateinit var prefs: SharedPreferences
 
@@ -41,6 +42,10 @@ object SessionManager {
     var userId: String?
         get() = prefs.getString(KEY_USER_ID, null)
         set(value) = prefs.edit().putString(KEY_USER_ID, value).apply()
+
+    var avatarUrl: String?
+        get() = prefs.getString(KEY_AVATAR_URL, null)
+        set(value) = prefs.edit().putString(KEY_AVATAR_URL, value).apply()
 
     val isLoggedIn: Boolean
         get() = !accessToken.isNullOrEmpty()

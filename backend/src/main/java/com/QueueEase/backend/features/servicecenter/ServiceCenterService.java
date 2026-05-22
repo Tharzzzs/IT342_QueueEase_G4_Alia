@@ -31,6 +31,7 @@ public class ServiceCenterService {
         data.put("createdBy", ownerEmail);
         data.put("assignedStaffEmail", request.getAssignedStaffEmail() != null ? request.getAssignedStaffEmail() : "");
         data.put("assignedStaffName", request.getAssignedStaffName() != null ? request.getAssignedStaffName() : "");
+        data.put("brandLogoUrl", request.getBrandLogoUrl() != null ? request.getBrandLogoUrl() : "");
         data.put("createdAt", Instant.now().toString());
         data.put("ownerEmail", ownerEmail); // explicitly tag the owner
 

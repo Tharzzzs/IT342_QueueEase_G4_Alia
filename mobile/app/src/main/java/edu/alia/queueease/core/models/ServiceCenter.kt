@@ -12,5 +12,6 @@ data class ServiceCenter(
     val createdBy: String = "",
     val createdAt: String? = null,
     val assignedStaffEmail: String? = null,
-    val assignedStaffName: String? = null
+    val assignedStaffName: String? = null,
+    val brandLogoUrl: String? = null
 )

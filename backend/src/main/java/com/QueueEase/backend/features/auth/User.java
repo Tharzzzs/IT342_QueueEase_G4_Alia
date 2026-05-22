@@ -27,6 +27,9 @@ public class User {
 
     private String role; // "ADMIN", "STAFF", or "USER"
 
+    @PropertyName("avatar_url")
+    private String avatarUrl;
+
     @PropertyName("created_at")
     private String createdAt;
 
