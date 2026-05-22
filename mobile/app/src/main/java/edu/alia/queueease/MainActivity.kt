@@ -1,37 +1,66 @@
 package edu.alia.queueease
 
-import edu.alia.queueease.R
-import edu.alia.queueease.features.auth.LoginActivity
-import edu.alia.queueease.features.auth.RegisterActivity
-
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Button
-import android.widget.TextView
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+import androidx.navigation.NavController
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.setupWithNavController
+import edu.alia.queueease.core.data.SessionManager
+import edu.alia.queueease.databinding.ActivityMainBinding
+import edu.alia.queueease.features.auth.LoginActivity
 
 class MainActivity : AppCompatActivity() {
+
+    private lateinit var binding: ActivityMainBinding
+    private lateinit var navController: NavController
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContentView(R.layout.activity_main)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
 
-        val email = intent.getStringExtra("USER_EMAIL") ?: "User"
-        val tvWelcome = findViewById<TextView>(R.id.tvWelcome)
-        tvWelcome.text = "Welcome, $email!"
-
-        val btnLogout = findViewById<Button>(R.id.btnLogout)
-        btnLogout.setOnClickListener {
+        // Check if user is logged in
+        if (!SessionManager.isLoggedIn) {
             startActivity(Intent(this, LoginActivity::class.java))
             finish()
+            return
+        }
+
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        setSupportActionBar(binding.toolbar)
+
+        setupNavigation()
+    }
+
+    private fun setupNavigation() {
+        val navHostFragment = supportFragmentManager
+            .findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+        val inflater = navHostFragment.navController.navInflater
+        
+        val role = SessionManager.role ?: "USER"
+        val graphId = when (role) {
+            "ADMIN" -> R.navigation.nav_admin
+            "STAFF" -> R.navigation.nav_staff
+            else -> R.navigation.nav_customer
+        }
+
+        val graph = inflater.inflate(graphId)
+        navHostFragment.navController.graph = graph
+        navController = navHostFragment.navController
+
+        // Set up bottom navigation menu based on role
+        val menuId = when (role) {
+            "ADMIN" -> R.menu.bottom_nav_admin
+            "STAFF" -> R.menu.bottom_nav_staff
+            else -> R.menu.bottom_nav_customer
+        }
+        binding.bottomNavigation.inflateMenu(menuId)
+        binding.bottomNavigation.setupWithNavController(navController)
+
+        // Update title based on destination
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            binding.toolbar.title = destination.label
         }
     }
 }

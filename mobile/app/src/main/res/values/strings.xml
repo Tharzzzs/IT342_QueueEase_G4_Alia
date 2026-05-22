@@ -1,3 +1,137 @@
 <resources>
     <string name="app_name">QueueEase</string>
+
+    <!-- Auth -->
+    <string name="welcome_back">Welcome Back</string>
+    <string name="sign_in_subtitle">Sign in to continue to QueueEase</string>
+    <string name="create_account">Create Account</string>
+    <string name="register_subtitle">Join QueueEase and skip the wait.</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="first_name">First Name</string>
+    <string name="last_name">Last Name</string>
+    <string name="sign_in">Sign In</string>
+    <string name="register">Register</string>
+    <string name="no_account">Don\'t have an account? </string>
+    <string name="have_account">Already have an account? </string>
+    <string name="sign_up">Sign Up</string>
+    <string name="log_in">Log In</string>
+    <string name="logout">Logout</string>
+    <string name="forgot_password">Forgot?</string>
+
+    <!-- Navigation -->
+    <string name="nav_home">Home</string>
+    <string name="nav_history">History</string>
+    <string name="nav_profile">Profile</string>
+    <string name="nav_dashboard">Dashboard</string>
+    <string name="nav_centers">Centers</string>
+    <string name="nav_add_staff">Add Staff</string>
+    <string name="nav_queue_monitor">Queue</string>
+
+    <!-- Customer Home -->
+    <string name="find_services">Find Services Near You</string>
+    <string name="join_queue_subtitle">Join a queue remotely and save your time</string>
+    <string name="search_hint">Search centers by name, category, or address…</string>
+    <string name="all_centers">All Centers</string>
+    <string name="favorites">Favorites</string>
+    <string name="join_queue">Join Queue</string>
+    <string name="active_queue">Active Queue</string>
+    <string name="no_centers">No service centers found</string>
+    <string name="no_favorites">No favorite centers yet</string>
+
+    <!-- Queue Status -->
+    <string name="now_serving">Now Serving</string>
+    <string name="in_queue">In Queue</string>
+    <string name="your_turn">It\'s your turn!</string>
+    <string name="your_turn_subtitle">Please proceed to the counter</string>
+    <string name="please_wait">Please wait</string>
+    <string name="please_wait_subtitle">Your position updates automatically</string>
+    <string name="leave_queue">Leave Queue</string>
+    <string name="back_to_home">Back to Home</string>
+    <string name="queue_number">Queue Number</string>
+    <string name="position">Position</string>
+    <string name="service_center">Service Center</string>
+    <string name="joined_at">Joined At</string>
+    <string name="serving_since">Serving Since</string>
+    <string name="status">Status</string>
+
+    <!-- Queue History -->
+    <string name="transaction_history">Transaction History</string>
+    <string name="no_history">No transaction history yet</string>
+
+    <!-- Admin Dashboard -->
+    <string name="active_centers">Active Centers</string>
+    <string name="people_in_queue">People in Queue</string>
+    <string name="served_today">Served Today</string>
+    <string name="total_centers">Total Centers</string>
+    <string name="service_centers_staff">Service Centers &amp; Staff</string>
+
+    <!-- Service Centers Management -->
+    <string name="service_centers">Service Centers</string>
+    <string name="create_center">Create Center</string>
+    <string name="edit_center">Edit Center</string>
+    <string name="center_name">Center Name</string>
+    <string name="category">Category</string>
+    <string name="description">Description</string>
+    <string name="address">Address</string>
+    <string name="operating_hours">Operating Hours</string>
+    <string name="max_capacity">Max Capacity</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="delete">Delete</string>
+    <string name="edit">Edit</string>
+    <string name="activate">Activate</string>
+    <string name="deactivate">Deactivate</string>
+    <string name="assign_staff">Assign Staff</string>
+    <string name="unassign_staff">Unassign Staff</string>
+    <string name="no_staff_assigned">No Staff Assigned</string>
+    <string name="select_staff">Select Staff Member</string>
+
+    <!-- Categories -->
+    <string name="cat_medical">Medical</string>
+    <string name="cat_government">Government</string>
+    <string name="cat_banking">Banking</string>
+    <string name="cat_utilities">Utilities</string>
+    <string name="cat_education">Education</string>
+    <string name="cat_other">Other</string>
+
+    <!-- Register Staff -->
+    <string name="add_staff">Add Staff</string>
+    <string name="staff_email">Staff Email</string>
+    <string name="temporary_password">Temporary Password</string>
+    <string name="register_staff">Register Staff</string>
+
+    <!-- Staff Dashboard -->
+    <string name="people_waiting">People Waiting</string>
+    <string name="quick_actions">Quick Actions</string>
+    <string name="open_queue_monitor">Open Queue Monitor</string>
+    <string name="center_details">Center Details</string>
+    <string name="no_center_assigned">No Service Center Assigned</string>
+    <string name="not_assigned_subtitle">You haven\'t been assigned to any service center yet.</string>
+
+    <!-- Queue Monitor -->
+    <string name="queue_monitor">Queue Monitor</string>
+    <string name="call_next">Call Next</string>
+    <string name="mark_served">Mark Served</string>
+    <string name="live_queue">Live Queue</string>
+    <string name="today_history">History (Today)</string>
+    <string name="waiting">Waiting</string>
+    <string name="serving">Serving</string>
+    <string name="completed">Completed</string>
+    <string name="cancelled">Cancelled</string>
+    <string name="no_one_waiting">No one in queue</string>
+    <string name="no_one_serving">No one being served</string>
+
+    <!-- Profile -->
+    <string name="profile">Profile</string>
+    <string name="role">Role</string>
+    <string name="confirm_logout">Are you sure you want to logout?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+
+    <!-- General -->
+    <string name="loading">Loading…</string>
+    <string name="error_occurred">An error occurred</string>
+    <string name="retry">Retry</string>
+    <string name="of">of</string>
 </resources>

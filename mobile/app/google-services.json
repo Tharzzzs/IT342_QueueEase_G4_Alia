@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "623398128884",
+    "project_id": "queueease-73d23",
+    "storage_bucket": "queueease-73d23.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:623398128884:android:89634d2d30abdbbfb962a1",
+        "android_client_info": {
+          "package_name": "edu.alia.queueease"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "623398128884-sf3jpkoq155roh7d6br8nd3f61p8gi0i.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDrBw7sDgkyvpwIr9WnQQ8Eu-ZTwKEA5C4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "623398128884-sf3jpkoq155roh7d6br8nd3f61p8gi0i.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

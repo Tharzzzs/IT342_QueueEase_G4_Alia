@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_staff"
+    app:startDestination="@id/staffDashboardFragment">
+
+    <fragment
+        android:id="@+id/staffDashboardFragment"
+        android:name="edu.alia.queueease.features.staff.StaffDashboardFragment"
+        android:label="@string/nav_dashboard" />
+
+    <fragment
+        android:id="@+id/queueMonitorFragment"
+        android:name="edu.alia.queueease.features.staff.QueueMonitorFragment"
+        android:label="@string/nav_queue_monitor" />
+
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="edu.alia.queueease.features.profile.ProfileFragment"
+        android:label="@string/nav_profile" />
+</navigation>

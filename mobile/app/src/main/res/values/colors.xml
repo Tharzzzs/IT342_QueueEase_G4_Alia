@@ -2,4 +2,47 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!-- Primary Blues -->
+    <color name="blue_50">#EFF6FF</color>
+    <color name="blue_100">#DBEAFE</color>
+    <color name="blue_500">#2563EB</color>
+    <color name="blue_600">#1D4ED8</color>
+    <color name="blue_700">#1E40AF</color>
+
+    <!-- Greens (Success/Serving) -->
+    <color name="green_50">#ECFDF5</color>
+    <color name="green_500">#10B981</color>
+    <color name="green_600">#047857</color>
+
+    <!-- Amber (Warning/Waiting) -->
+    <color name="amber_50">#FFFBEB</color>
+    <color name="amber_500">#D97706</color>
+    <color name="warning_400">#F59E0B</color>
+
+    <!-- Reds (Error/Danger) -->
+    <color name="red_50">#FEF2F2</color>
+    <color name="red_500">#DC2626</color>
+    <color name="red_600">#B91C1C</color>
+
+    <!-- Purple -->
+    <color name="purple_50">#F5F3FF</color>
+    <color name="purple_500">#7C3AED</color>
+
+    <!-- Grays (Slate-based) -->
+    <color name="gray_50">#F8FAFC</color>
+    <color name="gray_100">#F1F5F9</color>
+    <color name="gray_200">#E2E8F0</color>
+    <color name="gray_300">#CBD5E1</color>
+    <color name="gray_400">#94A3B8</color>
+    <color name="gray_500">#64748B</color>
+    <color name="gray_600">#475569</color>
+    <color name="gray_700">#334155</color>
+    <color name="gray_800">#1E293B</color>
+    <color name="gray_900">#0F172A</color>
+
+    <!-- Surfaces -->
+    <color name="surface">#FFFFFF</color>
+    <color name="surface_muted">#F8FAFC</color>
+    <color name="border_subtle">#E5E7EB</color>
 </resources>

@@ -1,66 +1,61 @@
 package edu.alia.queueease.features.auth
 
-import edu.alia.queueease.R
-import edu.alia.queueease.MainActivity
-import edu.alia.queueease.core.network.ApiClient
-import edu.alia.queueease.core.network.models.LoginRequest
-import edu.alia.queueease.core.network.models.RegisterRequest
-import edu.alia.queueease.core.network.models.AuthResponse
-
-import android.content.Intent
 import android.os.Bundle
-import android.widget.Button
-import android.widget.EditText
-import android.widget.TextView
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import androidx.lifecycle.ViewModelProvider
+import edu.alia.queueease.databinding.ActivityRegisterBinding
 
 class RegisterActivity : AppCompatActivity() {
 
+    private lateinit var binding: ActivityRegisterBinding
+    private lateinit var viewModel: RegisterViewModel
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_register)
+        binding = ActivityRegisterBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        val etFirstName = findViewById<EditText>(R.id.etFirstName)
-        val etLastName = findViewById<EditText>(R.id.etLastName)
-        val etEmail = findViewById<EditText>(R.id.etEmail)
-        val etPassword = findViewById<EditText>(R.id.etPassword)
-        val btnRegister = findViewById<Button>(R.id.btnRegister)
-        val tvLogin = findViewById<TextView>(R.id.tvLogin)
+        viewModel = ViewModelProvider(this)[RegisterViewModel::class.java]
 
-        tvLogin.setOnClickListener {
-            finish() // go back to login
+        setupListeners()
+        observeViewModel()
+    }
+
+    private fun setupListeners() {
+        binding.btnRegister.setOnClickListener {
+            val firstName = binding.etFirstName.text.toString().trim()
+            val lastName = binding.etLastName.text.toString().trim()
+            val email = binding.etEmail.text.toString().trim()
+            val pass = binding.etPassword.text.toString().trim()
+            viewModel.register(firstName, lastName, email, pass)
         }
 
-        btnRegister.setOnClickListener {
-            val firstName = etFirstName.text.toString().trim()
-            val lastName = etLastName.text.toString().trim()
-            val email = etEmail.text.toString().trim()
-            val password = etPassword.text.toString().trim()
+        binding.tvLogin.setOnClickListener {
+            finish()
+        }
+    }
 
-            if (firstName.isEmpty() || lastName.isEmpty() || email.isEmpty() || password.isEmpty()) {
-                Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
+    private fun observeViewModel() {
+        viewModel.registerState.observe(this) { state ->
+            when (state) {
+                is RegisterViewModel.RegisterState.Loading -> {
+                    binding.progressBar.visibility = View.VISIBLE
+                    binding.btnRegister.isEnabled = false
+                }
+                is RegisterViewModel.RegisterState.Success -> {
+                    binding.progressBar.visibility = View.GONE
+                    binding.btnRegister.isEnabled = true
+                    Toast.makeText(this, "Registration Successful", Toast.LENGTH_SHORT).show()
+                    finish()
+                }
+                is RegisterViewModel.RegisterState.Error -> {
+                    binding.progressBar.visibility = View.GONE
+                    binding.btnRegister.isEnabled = true
+                    Toast.makeText(this, state.message, Toast.LENGTH_LONG).show()
+                }
             }
-
-            val request = RegisterRequest(firstName, lastName, email, password)
-            ApiClient.apiService.register(request).enqueue(object : Callback<AuthResponse> {
-                override fun onResponse(call: Call<AuthResponse>, response: Response<AuthResponse>) {
-                    if (response.isSuccessful && response.body()?.success == true) {
-                        Toast.makeText(this@RegisterActivity, "Registration Successful", Toast.LENGTH_SHORT).show()
-                        finish() // Success, go back to login
-                    } else {
-                        Toast.makeText(this@RegisterActivity, "Registration Failed", Toast.LENGTH_SHORT).show()
-                    }
-                }
-
-                override fun onFailure(call: Call<AuthResponse>, t: Throwable) {
-                    Toast.makeText(this@RegisterActivity, "Error: ${t.message}", Toast.LENGTH_SHORT).show()
-                }
-            })
         }
     }
 }

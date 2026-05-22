@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Base Style to prevent implicit parent errors -->
+    <style name="QueueEase" parent="" />
+
+    <!-- Buttons -->
+    <style name="QueueEase.Button" parent="Widget.Material3.Button">
+        <item name="android:layout_height">@dimen/button_height</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textSize">@dimen/text_base</item>
+        <item name="android:textStyle">bold</item>
+        <item name="cornerRadius">@dimen/radius_md</item>
+    </style>
+
+    <style name="QueueEase.Button.Primary" parent="QueueEase.Button">
+        <item name="backgroundTint">@color/blue_600</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="QueueEase.Button.Success" parent="QueueEase.Button">
+        <item name="backgroundTint">@color/green_600</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="QueueEase.Button.Danger" parent="QueueEase.Button">
+        <item name="backgroundTint">@color/red_600</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <style name="QueueEase.Button.Outline" parent="Widget.Material3.Button.OutlinedButton">
+        <item name="android:layout_height">@dimen/button_height</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textSize">@dimen/text_base</item>
+        <item name="android:textStyle">bold</item>
+        <item name="cornerRadius">@dimen/radius_md</item>
+        <item name="strokeColor">@color/gray_300</item>
+        <item name="android:textColor">@color/gray_700</item>
+    </style>
+
+    <style name="QueueEase.Button.Outline.Danger" parent="QueueEase.Button.Outline">
+        <item name="strokeColor">@color/red_500</item>
+        <item name="android:textColor">@color/red_600</item>
+    </style>
+
+    <style name="QueueEase.Button.Text" parent="Widget.Material3.Button.TextButton">
+        <item name="android:layout_height">@dimen/button_height</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textSize">@dimen/text_base</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/blue_600</item>
+    </style>
+
+    <!-- Text Inputs -->
+    <style name="QueueEase.TextInput" parent="Widget.Material3.TextInputLayout.OutlinedBox">
+        <item name="boxStrokeColor">@color/gray_300</item>
+        <item name="boxStrokeWidth">1dp</item>
+        <item name="boxStrokeWidthFocused">2dp</item>
+        <item name="boxBackgroundColor">@color/white</item>
+        <item name="boxCornerRadiusTopStart">@dimen/radius_md</item>
+        <item name="boxCornerRadiusTopEnd">@dimen/radius_md</item>
+        <item name="boxCornerRadiusBottomStart">@dimen/radius_md</item>
+        <item name="boxCornerRadiusBottomEnd">@dimen/radius_md</item>
+        <item name="hintTextColor">@color/blue_600</item>
+    </style>
+
+    <!-- Cards -->
+    <style name="QueueEase.Card" parent="Widget.Material3.CardView.Filled">
+        <item name="cardBackgroundColor">@color/white</item>
+        <item name="cardCornerRadius">@dimen/radius_lg</item>
+        <item name="cardElevation">0dp</item>
+        <item name="strokeColor">@color/gray_200</item>
+        <item name="strokeWidth">1dp</item>
+    </style>
+
+    <style name="QueueEase.Card.Elevated" parent="Widget.Material3.CardView.Elevated">
+        <item name="cardBackgroundColor">@color/white</item>
+        <item name="cardCornerRadius">@dimen/radius_lg</item>
+        <item name="cardElevation">4dp</item>
+    </style>
+
+    <!-- Typography -->
+    <style name="QueueEase.Text" parent="TextAppearance.Material3.BodyMedium">
+        <item name="android:textColor">@color/gray_800</item>
+        <item name="android:fontFamily">sans-serif</item>
+    </style>
+
+    <style name="QueueEase.Text.PageTitle">
+        <item name="android:textSize">@dimen/text_3xl</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/gray_900</item>
+    </style>
+
+    <style name="QueueEase.Text.SectionTitle">
+        <item name="android:textSize">@dimen/text_xl</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/gray_900</item>
+    </style>
+
+    <style name="QueueEase.Text.SectionLabel">
+        <item name="android:textSize">@dimen/text_sm</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/gray_500</item>
+        <item name="android:textAllCaps">true</item>
+        <item name="android:letterSpacing">0.05</item>
+    </style>
+
+    <style name="QueueEase.Text.Body">
+        <item name="android:textSize">@dimen/text_base</item>
+        <item name="android:textColor">@color/gray_600</item>
+    </style>
+
+    <style name="QueueEase.Text.Caption">
+        <item name="android:textSize">@dimen/text_sm</item>
+        <item name="android:textColor">@color/gray_500</item>
+    </style>
+
+    <style name="QueueEase.Text.HeroNumber">
+        <item name="android:textSize">@dimen/text_hero</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+
+    <!-- Pills/Badges -->
+    <style name="QueueEase.Pill">
+        <item name="android:paddingHorizontal">@dimen/spacing_md</item>
+        <item name="android:paddingVertical">@dimen/spacing_xs</item>
+        <item name="android:textSize">@dimen/text_xs</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:gravity">center</item>
+    </style>
+</resources>
