@@ -15,7 +15,7 @@ const Register = () => {
       alert('Registration Successful! Please log in.');
       navigate('/login');
     } catch (err: any) {
-      alert(err.response?.data?.message || 'Registration Failed');
+      alert(err.message || err.response?.data?.message || 'Registration Failed');
     } finally {
       setLoading(false);
     }

@@ -73,6 +73,12 @@ public class AuthFacade {
     }
 
     public AuthResponse register(Map<String, String> payload) throws Exception {
+        String email = payload.get("email").toLowerCase().trim();
+        var existingUser = db.collection("users").whereEqualTo("email", email).get().get();
+        if (!existingUser.isEmpty()) {
+            throw new Exception("Email is already registered");
+        }
+
         User user = userFactory.createRegularUser(payload);
         user.setPasswordHash(encoder.encode(payload.get("password")));
 
@@ -89,6 +95,12 @@ public class AuthFacade {
     }
 
     public AuthResponse registerStaff(Map<String, String> payload) throws Exception {
+        String email = payload.get("email").toLowerCase().trim();
+        var existingUser = db.collection("users").whereEqualTo("email", email).get().get();
+        if (!existingUser.isEmpty()) {
+            throw new Exception("Email is already registered");
+        }
+
         User user = userFactory.createStaffUser(payload);
         user.setPasswordHash(encoder.encode(payload.get("password")));
 

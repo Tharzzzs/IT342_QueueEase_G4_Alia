@@ -19,7 +19,7 @@ const RegisterStaff = () => {
       alert('Staff Member Registered Successfully!');
       navigate('/admin/dashboard');
     } catch (err: any) {
-      alert(err.response?.data?.message || 'Action Failed: Insufficient Permissions');
+      alert(err.response?.data?.error?.message || err.response?.data?.message || err.message || 'Action Failed: Insufficient Permissions');
     } finally {
       setLoading(false);
     }
