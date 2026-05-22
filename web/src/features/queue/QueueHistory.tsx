@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { ArrowLeft, ClipboardList } from 'lucide-react';
 import { getUserQueueHistory, type QueueEntry } from './queue';
 
 const QueueHistory = () => {
@@ -13,7 +14,7 @@ const QueueHistory = () => {
       navigate('/login');
       return;
     }
-    
+
     const fetchHistory = async () => {
       setLoading(true);
       const data = await getUserQueueHistory(email);
@@ -55,7 +56,7 @@ const QueueHistory = () => {
         <div className="flex justify-between items-center mb-6">
           <h2 className="customer-section-title mb-0">Transaction History</h2>
           <button onClick={() => navigate('/customer/home')} className="btn-secondary btn-sm">
-            ← Back to Home
+            <ArrowLeft size={16} /> Back to Home
           </button>
         </div>
 
@@ -66,7 +67,7 @@ const QueueHistory = () => {
           </div>
         ) : history.length === 0 ? (
           <div className="empty-state">
-            <p className="empty-state-icon">📋</p>
+            <div className="empty-state-icon"><ClipboardList size={36} /></div>
             <p className="empty-state-text">No past transactions found.</p>
           </div>
         ) : (

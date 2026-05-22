@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Clock, MapPin, Plus, Search, UserRound, Users } from 'lucide-react';
 import Sidebar from '../../components/Sidebar';
 import Toast, { useToast } from '../../components/Toast';
 import {
@@ -36,8 +37,6 @@ const ServiceCenters = () => {
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const { toasts, addToast, removeToast } = useToast();
-
-  // Staff assignment modal state
   const [showAssignModal, setShowAssignModal] = useState(false);
   const [assignCenterId, setAssignCenterId] = useState<string | null>(null);
   const [assignCenterName, setAssignCenterName] = useState('');
@@ -47,20 +46,15 @@ const ServiceCenters = () => {
 
   useEffect(() => {
     const unsub = subscribeToServiceCenters(
-      (data) => {
-        setCenters(data);
-      },
+      (data) => setCenters(data),
       (error) => {
         console.error('Service centers subscription failed:', error);
         addToast('error', 'Failed to load service centers: ' + (error.message || 'Check Firestore rules.'));
       }
     );
-    
-    // Load staff users for assignment modal
+
     if (role === 'ADMIN') {
-      getAllStaffUsers().then((users) => {
-        setStaffList(users);
-      });
+      getAllStaffUsers().then((users) => setStaffList(users));
     }
 
     return () => unsub();
@@ -92,10 +86,10 @@ const ServiceCenters = () => {
     try {
       if (editingId) {
         await updateServiceCenter(editingId, form);
-        addToast('success', `"${form.name}" updated successfully!`);
+        addToast('success', `"${form.name}" updated successfully.`);
       } else {
         await createServiceCenter(form);
-        addToast('success', `"${form.name}" created successfully!`);
+        addToast('success', `"${form.name}" created successfully.`);
       }
       resetForm();
     } catch (err: any) {
@@ -144,7 +138,6 @@ const ServiceCenters = () => {
     c.category.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Staff assignment handlers
   const openAssignModal = (center: ServiceCenter) => {
     setAssignCenterId(center.id!);
     setAssignCenterName(center.name);
@@ -166,7 +159,6 @@ const ServiceCenters = () => {
       return;
     }
 
-    // Check if this center already has staff
     const center = centers.find((c) => c.id === assignCenterId);
     if (center?.assignedStaffEmail) {
       addToast('error', `This center already has staff assigned (${center.assignedStaffEmail}). Unassign them first.`);
@@ -177,7 +169,7 @@ const ServiceCenters = () => {
     try {
       const staffName = selectedStaff.name || `${selectedStaff.firstname || ''} ${selectedStaff.lastname || ''}`.trim() || 'Staff User';
       await assignStaffToCenter(assignCenterId, selectedStaff.email, staffName);
-      addToast('success', `Staff "${staffName}" assigned to "${assignCenterName}" successfully!`);
+      addToast('success', `Staff "${staffName}" assigned to "${assignCenterName}" successfully.`);
       setShowAssignModal(false);
     } catch (err: any) {
       addToast('error', err.message || 'Failed to assign staff.');
@@ -207,14 +199,13 @@ const ServiceCenters = () => {
           </div>
           {role === 'ADMIN' && (
             <button onClick={() => { resetForm(); setShowModal(true); }} className="btn-primary-sm">
-              + Add Center
+              <Plus size={16} /> Add Center
             </button>
           )}
         </header>
 
-        {/* Search Bar */}
         <div className="search-bar-wrapper">
-          <span className="search-icon">🔍</span>
+          <span className="search-icon"><Search size={17} /></span>
           <input
             type="text"
             placeholder="Search by name or category..."
@@ -224,11 +215,10 @@ const ServiceCenters = () => {
           />
         </div>
 
-        {/* Centers Grid */}
         <div className="centers-grid">
           {filtered.length === 0 ? (
             <div className="empty-state">
-              <p className="empty-state-icon">🏢</p>
+              <div className="empty-state-icon"><Users size={36} /></div>
               <p className="empty-state-text">No service centers found.</p>
               {role === 'ADMIN' && <p className="empty-state-sub">Create your first service center to get started.</p>}
             </div>
@@ -245,22 +235,21 @@ const ServiceCenters = () => {
                 <p className="center-card-desc">{center.description || 'No description provided.'}</p>
                 <div className="center-card-details">
                   <div className="center-detail">
-                    <span className="detail-label">📍 Address</span>
+                    <span className="detail-label"><MapPin size={14} /> Address</span>
                     <span className="detail-value">{center.address}</span>
                   </div>
                   <div className="center-detail">
-                    <span className="detail-label">🕐 Hours</span>
+                    <span className="detail-label"><Clock size={14} /> Hours</span>
                     <span className="detail-value">{center.operatingHours}</span>
                   </div>
                   <div className="center-detail">
-                    <span className="detail-label">👥 Capacity</span>
+                    <span className="detail-label"><Users size={14} /> Capacity</span>
                     <span className="detail-value">{center.maxCapacity}</span>
                   </div>
                 </div>
 
-                {/* Staff Assignment Section */}
                 <div className="staff-assignment-section">
-                  <span className="detail-label">👤 Assigned Staff</span>
+                  <span className="detail-label"><UserRound size={14} /> Assigned Staff</span>
                   {center.assignedStaffEmail ? (
                     <div className="staff-assignment-badge">
                       <span className="staff-dot staff-dot-assigned"></span>
@@ -297,7 +286,6 @@ const ServiceCenters = () => {
           )}
         </div>
 
-        {/* Create/Edit Center Modal */}
         {showModal && (
           <div className="modal-overlay" onClick={() => resetForm()}>
             <div className="modal-card" onClick={(e) => e.stopPropagation()}>
@@ -305,68 +293,30 @@ const ServiceCenters = () => {
               <form onSubmit={handleSubmit} className="modal-form">
                 <div className="form-group">
                   <label className="form-label">Name *</label>
-                  <input
-                    type="text"
-                    value={form.name}
-                    onChange={(e) => setForm({ ...form, name: e.target.value })}
-                    className="form-input"
-                    placeholder="e.g. City Medical Clinic"
-                    required
-                  />
+                  <input type="text" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="form-input" placeholder="e.g. City Medical Clinic" required />
                 </div>
                 <div className="form-group">
                   <label className="form-label">Category *</label>
-                  <select
-                    value={form.category}
-                    onChange={(e) => setForm({ ...form, category: e.target.value })}
-                    className="form-input"
-                  >
+                  <select value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} className="form-input">
                     {CATEGORIES.map((c) => <option key={c} value={c}>{c}</option>)}
                   </select>
                 </div>
                 <div className="form-group">
                   <label className="form-label">Description</label>
-                  <textarea
-                    value={form.description}
-                    onChange={(e) => setForm({ ...form, description: e.target.value })}
-                    className="form-input form-textarea"
-                    placeholder="Brief description..."
-                    rows={3}
-                  />
+                  <textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} className="form-input form-textarea" placeholder="Brief description..." rows={3} />
                 </div>
                 <div className="form-group">
                   <label className="form-label">Address *</label>
-                  <input
-                    type="text"
-                    value={form.address}
-                    onChange={(e) => setForm({ ...form, address: e.target.value })}
-                    className="form-input"
-                    placeholder="Full address"
-                    required
-                  />
+                  <input type="text" value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} className="form-input" placeholder="Full address" required />
                 </div>
                 <div className="form-row">
                   <div className="form-group">
                     <label className="form-label">Operating Hours *</label>
-                    <input
-                      type="text"
-                      value={form.operatingHours}
-                      onChange={(e) => setForm({ ...form, operatingHours: e.target.value })}
-                      className="form-input"
-                      placeholder="8:00 AM - 5:00 PM"
-                      required
-                    />
+                    <input type="text" value={form.operatingHours} onChange={(e) => setForm({ ...form, operatingHours: e.target.value })} className="form-input" placeholder="8:00 AM - 5:00 PM" required />
                   </div>
                   <div className="form-group">
                     <label className="form-label">Max Capacity *</label>
-                    <input
-                      type="number"
-                      value={form.maxCapacity}
-                      onChange={(e) => setForm({ ...form, maxCapacity: parseInt(e.target.value) || 0 })}
-                      className="form-input"
-                      min={1}
-                      required
-                    />
+                    <input type="number" value={form.maxCapacity} onChange={(e) => setForm({ ...form, maxCapacity: parseInt(e.target.value) || 0 })} className="form-input" min={1} required />
                   </div>
                 </div>
                 <div className="modal-actions">
@@ -380,26 +330,18 @@ const ServiceCenters = () => {
           </div>
         )}
 
-        {/* Assign Staff Modal */}
         {showAssignModal && (
           <div className="modal-overlay" onClick={() => setShowAssignModal(false)}>
             <div className="modal-card" onClick={(e) => e.stopPropagation()}>
               <h3 className="modal-title">Assign Staff to "{assignCenterName}"</h3>
-              <p className="assign-modal-subtitle">
-                Select a registered staff member from the list. Each center can only have one staff member.
-              </p>
+              <p className="assign-modal-subtitle">Select a registered staff member from the list. Each center can only have one staff member.</p>
               <form onSubmit={handleAssignStaff} className="modal-form">
                 <div className="form-group">
                   <label className="form-label">Select Staff *</label>
                   {staffList.length === 0 ? (
                     <p className="text-muted">No staff accounts found. Please register a staff member first.</p>
                   ) : (
-                    <select
-                      value={selectedStaffEmail}
-                      onChange={(e) => setSelectedStaffEmail(e.target.value)}
-                      className="form-input"
-                      required
-                    >
+                    <select value={selectedStaffEmail} onChange={(e) => setSelectedStaffEmail(e.target.value)} className="form-input" required>
                       <option value="">-- Choose Staff --</option>
                       {staffList.map((staff) => {
                         const name = staff.name || `${staff.firstname || ''} ${staff.lastname || ''}`.trim();

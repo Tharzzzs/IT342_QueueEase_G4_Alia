@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { BarChart3, Building2, CheckCircle2, ClipboardList, Link2, MapPin, Clock, Users, Folder } from 'lucide-react';
 import Sidebar from '../../components/Sidebar';
 import { subscribeToServiceCenters, subscribeToStaffCenter, type ServiceCenter } from './serviceCenter';
 import { getTotalInQueue, getServedTodayCount, getWaitingCount } from '../queue/queue';
@@ -9,21 +10,15 @@ const AdminDashboard = () => {
   const email = localStorage.getItem('email') || '';
   const navigate = useNavigate();
 
-  // Shared state
   const [loading, setLoading] = useState(true);
-
-  // Admin state
   const [centers, setCenters] = useState<ServiceCenter[]>([]);
   const [activeCenters, setActiveCenters] = useState(0);
   const [peopleInQueue, setPeopleInQueue] = useState(0);
   const [servedToday, setServedToday] = useState(0);
-
-  // Staff state
   const [assignedCenter, setAssignedCenter] = useState<ServiceCenter | null>(null);
   const [staffQueueCount, setStaffQueueCount] = useState(0);
   const [staffServedToday, setStaffServedToday] = useState(0);
 
-  // Admin: load all metrics
   useEffect(() => {
     if (role !== 'ADMIN') return;
 
@@ -56,7 +51,6 @@ const AdminDashboard = () => {
     };
   }, [role]);
 
-  // Staff: load assigned center metrics
   useEffect(() => {
     if (role !== 'STAFF' || !email) return;
 
@@ -66,7 +60,6 @@ const AdminDashboard = () => {
         try {
           const count = await getWaitingCount(center.id);
           setStaffQueueCount(count);
-          // Load served today for this center's queue
           const servedCount = await getServedTodayCount();
           setStaffServedToday(servedCount);
         } catch (err) {
@@ -87,9 +80,8 @@ const AdminDashboard = () => {
       unsub();
       clearInterval(interval);
     };
-  }, [role, email]);
+  }, [role, email, assignedCenter?.id]);
 
-  // ─── ADMIN DASHBOARD ─────────────────────────────
   if (role === 'ADMIN') {
     return (
       <div className="admin-layout">
@@ -105,31 +97,30 @@ const AdminDashboard = () => {
             </div>
           </header>
 
-          {/* Metric Cards */}
           <div className="metrics-grid">
             <div className="metric-card metric-blue">
-              <div className="metric-icon">🏢</div>
+              <div className="metric-icon"><Building2 size={24} /></div>
               <div>
                 <p className="metric-label">Active Centers</p>
                 <p className="metric-value">{loading ? '...' : activeCenters}</p>
               </div>
             </div>
             <div className="metric-card metric-amber">
-              <div className="metric-icon">👥</div>
+              <div className="metric-icon"><Users size={24} /></div>
               <div>
                 <p className="metric-label">People in Queue</p>
                 <p className="metric-value">{loading ? '...' : peopleInQueue}</p>
               </div>
             </div>
             <div className="metric-card metric-green">
-              <div className="metric-icon">✅</div>
+              <div className="metric-icon"><CheckCircle2 size={24} /></div>
               <div>
                 <p className="metric-label">Served Today</p>
                 <p className="metric-value">{loading ? '...' : servedToday}</p>
               </div>
             </div>
             <div className="metric-card metric-purple">
-              <div className="metric-icon">📊</div>
+              <div className="metric-icon"><BarChart3 size={24} /></div>
               <div>
                 <p className="metric-label">Total Centers</p>
                 <p className="metric-value">{loading ? '...' : centers.length}</p>
@@ -137,7 +128,6 @@ const AdminDashboard = () => {
             </div>
           </div>
 
-          {/* Service Centers Overview */}
           <div className="dashboard-section">
             <div className="section-header">
               <h3 className="section-title">Service Centers & Staff Assignments</h3>
@@ -161,9 +151,7 @@ const AdminDashboard = () => {
                     {centers.slice(0, 10).map((center) => (
                       <tr key={center.id}>
                         <td className="font-semibold">{center.name}</td>
-                        <td>
-                          <span className="category-pill">{center.category}</span>
-                        </td>
+                        <td><span className="category-pill">{center.category}</span></td>
                         <td>
                           {center.assignedStaffEmail ? (
                             <div className="staff-assignment-badge">
@@ -194,7 +182,6 @@ const AdminDashboard = () => {
     );
   }
 
-  // ─── STAFF DASHBOARD ─────────────────────────────
   return (
     <div className="admin-layout">
       <Sidebar role={role} />
@@ -213,12 +200,12 @@ const AdminDashboard = () => {
 
         {loading ? (
           <div className="empty-state">
-            <p className="empty-state-icon">⏳</p>
+            <div className="empty-state-icon"><Clock size={36} /></div>
             <p className="empty-state-text">Loading your dashboard...</p>
           </div>
         ) : !assignedCenter ? (
           <div className="access-denied-container">
-            <div className="access-denied-icon">🔗</div>
+            <div className="access-denied-icon"><Link2 size={48} /></div>
             <h3 className="access-denied-title">No Service Center Assigned</h3>
             <p className="access-denied-text">
               You haven't been assigned to a service center yet.<br />
@@ -227,24 +214,23 @@ const AdminDashboard = () => {
           </div>
         ) : (
           <>
-            {/* Staff Metrics */}
             <div className="metrics-grid">
               <div className="metric-card metric-blue">
-                <div className="metric-icon">🏢</div>
+                <div className="metric-icon"><Building2 size={24} /></div>
                 <div>
                   <p className="metric-label">Your Center</p>
                   <p className="metric-value" style={{ fontSize: '1.1rem' }}>{assignedCenter.name}</p>
                 </div>
               </div>
               <div className="metric-card metric-amber">
-                <div className="metric-icon">👥</div>
+                <div className="metric-icon"><Users size={24} /></div>
                 <div>
                   <p className="metric-label">People Waiting</p>
                   <p className="metric-value">{staffQueueCount}</p>
                 </div>
               </div>
               <div className="metric-card metric-green">
-                <div className="metric-icon">✅</div>
+                <div className="metric-icon"><CheckCircle2 size={24} /></div>
                 <div>
                   <p className="metric-label">Served Today</p>
                   <p className="metric-value">{staffServedToday}</p>
@@ -252,46 +238,40 @@ const AdminDashboard = () => {
               </div>
             </div>
 
-            {/* Quick Action */}
             <div className="dashboard-section">
               <div className="section-header">
                 <h3 className="section-title">Quick Actions</h3>
               </div>
               <div className="staff-quick-actions">
-                <button
-                  onClick={() => navigate('/admin/queue-monitor')}
-                  className="staff-action-card"
-                >
-                  <span className="staff-action-icon">📋</span>
+                <button onClick={() => navigate('/admin/queue-monitor')} className="staff-action-card">
+                  <span className="staff-action-icon"><ClipboardList size={24} /></span>
                   <div>
                     <p className="staff-action-title">Open Queue Monitor</p>
                     <p className="staff-action-desc">Manage the queue for {assignedCenter.name}</p>
                   </div>
-                  <span className="staff-action-arrow">→</span>
                 </button>
               </div>
             </div>
 
-            {/* Center Info */}
             <div className="dashboard-section">
               <div className="section-header">
                 <h3 className="section-title">Center Details</h3>
               </div>
               <div className="staff-center-info-card">
                 <div className="center-detail">
-                  <span className="detail-label">📍 Address</span>
+                  <span className="detail-label"><MapPin size={14} /> Address</span>
                   <span className="detail-value">{assignedCenter.address}</span>
                 </div>
                 <div className="center-detail">
-                  <span className="detail-label">🕐 Hours</span>
+                  <span className="detail-label"><Clock size={14} /> Hours</span>
                   <span className="detail-value">{assignedCenter.operatingHours}</span>
                 </div>
                 <div className="center-detail">
-                  <span className="detail-label">👥 Max Capacity</span>
+                  <span className="detail-label"><Users size={14} /> Max Capacity</span>
                   <span className="detail-value">{assignedCenter.maxCapacity}</span>
                 </div>
                 <div className="center-detail">
-                  <span className="detail-label">📂 Category</span>
+                  <span className="detail-label"><Folder size={14} /> Category</span>
                   <span className="detail-value">{assignedCenter.category}</span>
                 </div>
               </div>

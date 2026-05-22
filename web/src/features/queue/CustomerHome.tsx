@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Building2, ChevronRight, Clock, ClipboardList, History, MapPin, Search, Star } from 'lucide-react';
 import Toast, { useToast } from '../../components/Toast';
 import { subscribeToServiceCenters, toggleFavoriteCenter, subscribeToFavorites, type ServiceCenter } from '../serviceCenter/serviceCenter';
 import { joinQueue, getUserActiveQueue, getWaitingCount } from './queue';
@@ -21,7 +22,6 @@ const CustomerHome = () => {
     const unsub = subscribeToServiceCenters((data) => {
       const active = data.filter((c) => c.isActive);
       setCenters(active);
-      // Load wait counts for each center
       active.forEach(async (center) => {
         if (center.id) {
           const count = await getWaitingCount(center.id);
@@ -29,8 +29,7 @@ const CustomerHome = () => {
         }
       });
     });
-    
-    // Subscribe to favorites
+
     const unsubFavs = subscribeToFavorites(email, (ids) => {
       setFavoriteIds(ids);
     });
@@ -41,7 +40,6 @@ const CustomerHome = () => {
     };
   }, [email]);
 
-  // Check if user already has an active queue
   useEffect(() => {
     const checkActive = async () => {
       const existing = await getUserActiveQueue(email);
@@ -62,11 +60,10 @@ const CustomerHome = () => {
         center.name,
         userId,
         email,
-        email.split('@')[0] // Use email prefix as display name
+        email.split('@')[0]
       );
-      addToast('success', `You joined the queue for ${center.name}! Queue number: #${result.queueNumber}`);
+      addToast('success', `You joined the queue for ${center.name}. Queue number: #${result.queueNumber}`);
       setHasActiveQueue(true);
-      // Navigate to queue status after a moment
       setTimeout(() => navigate('/customer/queue-status'), 1500);
     } catch (err: any) {
       addToast('error', err.message || 'Failed to join queue.');
@@ -100,16 +97,15 @@ const CustomerHome = () => {
 
   return (
     <div className="customer-page">
-      {/* Header */}
       <header className="customer-header">
         <h1 className="customer-brand" onClick={() => navigate('/customer/home')}>QueueEase</h1>
         <div className="customer-header-right">
           <button onClick={() => navigate('/customer/history')} className="btn-secondary btn-sm" style={{ marginRight: '10px' }}>
-            🕒 History
+            <History size={16} /> History
           </button>
           {hasActiveQueue && (
             <button onClick={() => navigate('/customer/queue-status')} className="btn-queue-status">
-              📋 My Queue
+              <ClipboardList size={16} /> My Queue
             </button>
           )}
           <span className="customer-email">{email}</span>
@@ -118,15 +114,13 @@ const CustomerHome = () => {
       </header>
 
       <div className="customer-container">
-        {/* Hero Section */}
         <div className="customer-hero">
           <h2 className="customer-hero-title">Find Services Near You</h2>
           <p className="customer-hero-subtitle">Join a queue remotely and save your time</p>
         </div>
 
-        {/* Search */}
         <div className="search-bar-wrapper customer-search">
-          <span className="search-icon">🔍</span>
+          <span className="search-icon"><Search size={17} /></span>
           <input
             type="text"
             placeholder="Search clinics, offices, banks..."
@@ -136,40 +130,39 @@ const CustomerHome = () => {
           />
         </div>
 
-        {/* Active Queue Banner */}
         {hasActiveQueue && (
           <div className="active-queue-banner" onClick={() => navigate('/customer/queue-status')}>
-            <span className="banner-icon">📋</span>
+            <span className="banner-icon"><ClipboardList size={22} /></span>
             <div>
               <p className="banner-title">You have an active queue</p>
               <p className="banner-text">Tap here to view your queue status</p>
             </div>
-            <span className="banner-arrow">→</span>
+            <span className="banner-arrow"><ChevronRight size={20} /></span>
           </div>
         )}
 
-        {/* Tabs */}
         <div className="customer-tabs">
-          <button 
+          <button
             className={`tab-btn ${filterTab === 'all' ? 'tab-active' : ''}`}
             onClick={() => setFilterTab('all')}
           >
             All Centers
           </button>
-          <button 
+          <button
             className={`tab-btn ${filterTab === 'favorites' ? 'tab-active' : ''}`}
             onClick={() => setFilterTab('favorites')}
           >
-            ★ My Favorites
+            Favorites
           </button>
         </div>
 
-        {/* Service Centers List */}
         <h3 className="customer-section-title">{filterTab === 'all' ? 'Available Service Centers' : 'Favorite Service Centers'}</h3>
         <div className="customer-centers-list">
           {filtered.length === 0 ? (
             <div className="empty-state">
-              <p className="empty-state-icon">{filterTab === 'favorites' ? '⭐' : '🏢'}</p>
+              <div className="empty-state-icon">
+                {filterTab === 'favorites' ? <Star size={36} /> : <Building2 size={36} />}
+              </div>
               <p className="empty-state-text">{filterTab === 'favorites' ? 'You have no favorite centers yet.' : 'No service centers available.'}</p>
             </div>
           ) : (
@@ -182,12 +175,12 @@ const CustomerHome = () => {
                       <span className="queue-count-badge">
                         {waitCounts[center.id!] || 0} in queue
                       </span>
-                      <button 
-                        className="btn-favorite" 
+                      <button
+                        className="btn-favorite"
                         onClick={(e) => handleToggleFavorite(e, center.id!)}
-                        title={favoriteIds.includes(center.id!) ? "Remove from favorites" : "Add to favorites"}
+                        title={favoriteIds.includes(center.id!) ? 'Remove from favorites' : 'Add to favorites'}
                       >
-                        {favoriteIds.includes(center.id!) ? '★' : '☆'}
+                        <Star size={20} fill={favoriteIds.includes(center.id!) ? 'currentColor' : 'none'} />
                       </button>
                     </div>
                   </div>
@@ -196,8 +189,8 @@ const CustomerHome = () => {
                     <p className="customer-center-desc">{center.description}</p>
                   )}
                   <div className="customer-center-meta">
-                    <span>📍 {center.address}</span>
-                    <span>🕐 {center.operatingHours}</span>
+                    <span><MapPin size={14} /> {center.address}</span>
+                    <span><Clock size={14} /> {center.operatingHours}</span>
                   </div>
                 </div>
                 <button

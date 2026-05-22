@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Check, Clock, Link2, Megaphone } from 'lucide-react';
 import Sidebar from '../../components/Sidebar';
 import Toast, { useToast } from '../../components/Toast';
 import { subscribeToStaffCenter, type ServiceCenter } from '../serviceCenter/serviceCenter';
@@ -7,11 +8,8 @@ import { subscribeToQueue, callNext, markServed, getCenterQueueHistory, type Que
 const QueueMonitor = () => {
   const role = localStorage.getItem('role');
   const email = localStorage.getItem('email') || '';
-
-  // Staff's assigned center (loaded automatically)
   const [assignedCenter, setAssignedCenter] = useState<ServiceCenter | null>(null);
   const [centerLoading, setCenterLoading] = useState(true);
-
   const [queueEntries, setQueueEntries] = useState<QueueEntry[]>([]);
   const [positionMap, setPositionMap] = useState<Map<string, number>>(new Map());
   const [loading, setLoading] = useState(false);
@@ -20,7 +18,6 @@ const QueueMonitor = () => {
   const [historyLoading, setHistoryLoading] = useState(false);
   const { toasts, addToast, removeToast } = useToast();
 
-  // Auto-load the staff's assigned center
   useEffect(() => {
     if (!email) {
       setCenterLoading(false);
@@ -33,14 +30,12 @@ const QueueMonitor = () => {
     return () => unsub();
   }, [email]);
 
-  // Subscribe to queue when assigned center is loaded
   useEffect(() => {
     if (!assignedCenter?.id) {
       setQueueEntries([]);
       return;
     }
     const unsub = subscribeToQueue(assignedCenter.id, (entries, positions) => {
-      // Show today's entries only
       const today = new Date();
       today.setHours(0, 0, 0, 0);
       const filtered = entries.filter((e) => {
@@ -54,7 +49,6 @@ const QueueMonitor = () => {
     return () => unsub();
   }, [assignedCenter]);
 
-  // Load history when tab switches
   useEffect(() => {
     if (activeTab === 'history' && assignedCenter?.id) {
       setHistoryLoading(true);
@@ -101,14 +95,13 @@ const QueueMonitor = () => {
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
 
-  // Loading state
   if (centerLoading) {
     return (
       <div className="admin-layout">
         <Sidebar role={role} />
         <div className="admin-main">
           <div className="empty-state">
-            <p className="empty-state-icon">⏳</p>
+            <div className="empty-state-icon"><Clock size={36} /></div>
             <p className="empty-state-text">Loading your assigned center...</p>
           </div>
         </div>
@@ -116,7 +109,6 @@ const QueueMonitor = () => {
     );
   }
 
-  // No assigned center
   if (!assignedCenter) {
     return (
       <div className="admin-layout">
@@ -129,7 +121,7 @@ const QueueMonitor = () => {
             </div>
           </header>
           <div className="access-denied-container">
-            <div className="access-denied-icon">🔗</div>
+            <div className="access-denied-icon"><Link2 size={48} /></div>
             <h3 className="access-denied-title">No Service Center Assigned</h3>
             <p className="access-denied-text">
               You haven't been assigned to a service center yet.<br />
@@ -149,20 +141,13 @@ const QueueMonitor = () => {
         <header className="admin-header">
           <div>
             <h2 className="admin-page-title">Queue Monitor</h2>
-            <p className="admin-page-subtitle">
-              Monitoring: {assignedCenter.name}
-            </p>
+            <p className="admin-page-subtitle">Monitoring: {assignedCenter.name}</p>
           </div>
-          <button
-            onClick={handleCallNext}
-            disabled={loading || waiting.length === 0}
-            className="btn-call-next"
-          >
-            {loading ? 'Calling...' : '📢 Call Next'}
+          <button onClick={handleCallNext} disabled={loading || waiting.length === 0} className="btn-call-next">
+            {loading ? 'Calling...' : <><Megaphone size={17} /> Call Next</>}
           </button>
         </header>
 
-        {/* Queue Stats */}
         <div className="queue-stats-row">
           <div className="queue-stat-card stat-waiting">
             <p className="stat-number">{waiting.length}</p>
@@ -178,106 +163,82 @@ const QueueMonitor = () => {
           </div>
         </div>
 
-        {/* Tabs */}
         <div className="customer-tabs" style={{ marginTop: '2rem' }}>
-          <button 
-            className={`tab-btn ${activeTab === 'live' ? 'tab-active' : ''}`}
-            onClick={() => setActiveTab('live')}
-          >
-            🔴 Live Queue
+          <button className={`tab-btn ${activeTab === 'live' ? 'tab-active' : ''}`} onClick={() => setActiveTab('live')}>
+            Live Queue
           </button>
-          <button 
-            className={`tab-btn ${activeTab === 'history' ? 'tab-active' : ''}`}
-            onClick={() => setActiveTab('history')}
-          >
-            🕒 Transaction History (Today)
+          <button className={`tab-btn ${activeTab === 'history' ? 'tab-active' : ''}`} onClick={() => setActiveTab('history')}>
+            Transaction History (Today)
           </button>
         </div>
 
         {activeTab === 'live' ? (
           <>
-            {/* Currently Serving */}
-        {serving.length > 0 && (
-          <div className="serving-section">
-            <h3 className="section-title">🟢 Now Serving</h3>
-            {serving.map((entry) => (
-              <div key={entry.id} className="serving-card">
-                <div className="serving-info">
-                  <span className="serving-number">#{positionMap.get(entry.id!) || entry.queueNumber}</span>
-                  <div>
-                    <p className="serving-name">{entry.userName}</p>
-                    <p className="serving-email">{entry.userEmail}</p>
+            {serving.length > 0 && (
+              <div className="serving-section">
+                <h3 className="section-title">Now Serving</h3>
+                {serving.map((entry) => (
+                  <div key={entry.id} className="serving-card">
+                    <div className="serving-info">
+                      <span className="serving-number">#{positionMap.get(entry.id!) || entry.queueNumber}</span>
+                      <div>
+                        <p className="serving-name">{entry.userName}</p>
+                        <p className="serving-email">{entry.userEmail}</p>
+                      </div>
+                    </div>
+                    <button onClick={() => handleMarkServed(entry)} className="btn-mark-served">
+                      <Check size={16} /> Mark Served
+                    </button>
                   </div>
-                </div>
-                <button onClick={() => handleMarkServed(entry)} className="btn-mark-served">
-                  ✓ Mark Served
-                </button>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* Queue Table */}
-        <div className="queue-table-wrapper">
-          <h3 className="section-title">📋 Queue List</h3>
-          {queueEntries.length === 0 ? (
-            <div className="empty-state-sm">
-              <p>No queue entries for today.</p>
-            </div>
-          ) : (
-            <table className="queue-table">
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th>Name</th>
-                  <th>Email</th>
-                  <th>Joined At</th>
-                  <th>Status</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {queueEntries
-                  .filter((e) => e.status !== 'CANCELLED')
-                  .map((entry) => (
-                  <tr key={entry.id} className={`queue-row queue-row-${entry.status.toLowerCase()}`}>
-                    <td className="queue-number-cell">{positionMap.get(entry.id!) || entry.queueNumber}</td>
-                    <td className="queue-name-cell">{entry.userName}</td>
-                    <td className="queue-email-cell">{entry.userEmail}</td>
-                    <td>{formatTime(entry.joinedAt)}</td>
-                    <td>
-                      <span className={`status-pill status-${entry.status.toLowerCase()}`}>
-                        {entry.status}
-                      </span>
-                    </td>
-                    <td>
-                      {entry.status === 'SERVING' && (
-                        <button onClick={() => handleMarkServed(entry)} className="btn-action btn-complete-sm">
-                          Complete
-                        </button>
-                      )}
-                      {entry.status === 'COMPLETED' && <span className="text-muted">Done</span>}
-                      {entry.status === 'WAITING' && <span className="text-muted">Waiting...</span>}
-                    </td>
-                  </tr>
                 ))}
-              </tbody>
-            </table>
-          )}
-        </div>
-      </>
+              </div>
+            )}
+
+            <div className="queue-table-wrapper">
+              <h3 className="section-title">Queue List</h3>
+              {queueEntries.length === 0 ? (
+                <div className="empty-state-sm"><p>No queue entries for today.</p></div>
+              ) : (
+                <table className="queue-table">
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>Name</th>
+                      <th>Email</th>
+                      <th>Joined At</th>
+                      <th>Status</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {queueEntries.filter((e) => e.status !== 'CANCELLED').map((entry) => (
+                      <tr key={entry.id} className={`queue-row queue-row-${entry.status.toLowerCase()}`}>
+                        <td className="queue-number-cell">{positionMap.get(entry.id!) || entry.queueNumber}</td>
+                        <td className="queue-name-cell">{entry.userName}</td>
+                        <td className="queue-email-cell">{entry.userEmail}</td>
+                        <td>{formatTime(entry.joinedAt)}</td>
+                        <td><span className={`status-pill status-${entry.status.toLowerCase()}`}>{entry.status}</span></td>
+                        <td>
+                          {entry.status === 'SERVING' && (
+                            <button onClick={() => handleMarkServed(entry)} className="btn-action btn-complete-sm">Complete</button>
+                          )}
+                          {entry.status === 'COMPLETED' && <span className="text-muted">Done</span>}
+                          {entry.status === 'WAITING' && <span className="text-muted">Waiting...</span>}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+            </div>
+          </>
         ) : (
-          /* History View */
           <div className="queue-table-wrapper">
-            <h3 className="section-title">🕒 Transaction History</h3>
+            <h3 className="section-title">Transaction History</h3>
             {historyLoading ? (
-              <div className="empty-state-sm">
-                <div className="spinner" style={{ margin: '0 auto' }}></div>
-              </div>
+              <div className="empty-state-sm"><div className="spinner" style={{ margin: '0 auto' }}></div></div>
             ) : historyEntries.length === 0 ? (
-              <div className="empty-state-sm">
-                <p>No historical transactions found for today.</p>
-              </div>
+              <div className="empty-state-sm"><p>No historical transactions found for today.</p></div>
             ) : (
               <table className="queue-table">
                 <thead>
@@ -296,11 +257,7 @@ const QueueMonitor = () => {
                       <td className="queue-name-cell">{entry.userName}</td>
                       <td className="queue-email-cell">{entry.userEmail}</td>
                       <td className="queue-number-cell">#{entry.queueNumber}</td>
-                      <td>
-                        <span className={`status-pill status-${entry.status.toLowerCase()}`}>
-                          {entry.status}
-                        </span>
-                      </td>
+                      <td><span className={`status-pill status-${entry.status.toLowerCase()}`}>{entry.status}</span></td>
                     </tr>
                   ))}
                 </tbody>

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { ArrowLeft, Clock, ClipboardList, X } from 'lucide-react';
 import Toast, { useToast } from '../../components/Toast';
 import { subscribeToUserQueueWithPosition, leaveQueue, type QueueEntry } from './queue';
 
@@ -72,7 +73,7 @@ const QueueStatus = () => {
           </div>
         </header>
         <div className="queue-status-empty">
-          <div className="empty-queue-icon">📭</div>
+          <div className="empty-queue-icon"><ClipboardList size={44} /></div>
           <h2>No Active Queue</h2>
           <p>You are not currently in any queue.</p>
           <button onClick={() => navigate('/customer/home')} className="btn-primary-sm">
@@ -97,16 +98,14 @@ const QueueStatus = () => {
       </header>
 
       <div className="queue-status-container">
-        {/* Status Header */}
         <div className={`queue-status-hero ${isServing ? 'hero-serving' : 'hero-waiting'}`}>
           <div className="hero-badge">
-            {isServing ? '🟢 NOW SERVING' : '⏳ IN QUEUE'}
+            {isServing ? 'Now Serving' : 'In Queue'}
           </div>
           <div className="hero-number">#{position || queueEntry.queueNumber}</div>
           <p className="hero-center">{queueEntry.serviceCenterName}</p>
         </div>
 
-        {/* Queue Details */}
         <div className="queue-details-card">
           <div className="queue-detail-row">
             <span className="queue-detail-label">Status</span>
@@ -140,18 +139,17 @@ const QueueStatus = () => {
           )}
         </div>
 
-        {/* Info message */}
         {isServing ? (
           <div className="queue-info-banner serving-banner">
-            <span className="banner-icon">🎉</span>
+            <span className="banner-icon"><ClipboardList size={22} /></span>
             <div>
-              <p className="banner-title">It's your turn!</p>
+              <p className="banner-title">It's your turn</p>
               <p className="banner-text">Please proceed to the service counter.</p>
             </div>
           </div>
         ) : (
           <div className="queue-info-banner waiting-banner">
-            <span className="banner-icon">⏳</span>
+            <span className="banner-icon"><Clock size={22} /></span>
             <div>
               <p className="banner-title">Please wait</p>
               <p className="banner-text">This page updates automatically. You'll be notified when it's your turn.</p>
@@ -159,19 +157,14 @@ const QueueStatus = () => {
           </div>
         )}
 
-        {/* Actions */}
         {!isServing && (
-          <button
-            onClick={handleLeaveQueue}
-            disabled={leaving}
-            className="btn-leave-queue"
-          >
-            {leaving ? 'Leaving...' : '✕ Leave Queue'}
+          <button onClick={handleLeaveQueue} disabled={leaving} className="btn-leave-queue">
+            {leaving ? 'Leaving...' : <><X size={16} /> Leave Queue</>}
           </button>
         )}
 
         <button onClick={() => navigate('/customer/home')} className="btn-secondary btn-full">
-          ← Back to Home
+          <ArrowLeft size={16} /> Back to Home
         </button>
       </div>
       <Toast toasts={toasts} removeToast={removeToast} />

@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { BarChart3, Building2, ClipboardList, LogOut, UserPlus } from 'lucide-react';
 
 interface SidebarProps {
   role: string | null;
@@ -16,7 +17,7 @@ const Sidebar: React.FC<SidebarProps> = ({ role }) => {
 
   const isActive = (path: string) => location.pathname === path;
 
-  const navItem = (label: string, path: string, icon: string) => (
+  const navItem = (label: string, path: string, icon: React.ReactNode) => (
     <div
       key={path}
       onClick={() => navigate(path)}
@@ -35,23 +36,21 @@ const Sidebar: React.FC<SidebarProps> = ({ role }) => {
       </div>
 
       <nav className="sidebar-nav">
-        {navItem('Dashboard', '/admin/dashboard', '📊')}
+        {navItem('Dashboard', '/admin/dashboard', <BarChart3 size={18} />)}
 
-        {/* ADMIN: manage centers & staff, no queue monitor */}
         {role === 'ADMIN' && (
           <>
-            {navItem('Service Centers', '/admin/service-centers', '🏢')}
+            {navItem('Service Centers', '/admin/service-centers', <Building2 size={18} />)}
             <div className="sidebar-section">
               <p className="sidebar-section-title">Administration</p>
-              {navItem('Register Staff', '/admin/register-staff', '👤')}
+              {navItem('Register Staff', '/admin/register-staff', <UserPlus size={18} />)}
             </div>
           </>
         )}
 
-        {/* STAFF: queue monitor only */}
         {role === 'STAFF' && (
           <>
-            {navItem('Queue Monitor', '/admin/queue-monitor', '📋')}
+            {navItem('Queue Monitor', '/admin/queue-monitor', <ClipboardList size={18} />)}
           </>
         )}
       </nav>
@@ -62,7 +61,7 @@ const Sidebar: React.FC<SidebarProps> = ({ role }) => {
           {role}
         </div>
         <button onClick={handleLogout} className="sidebar-logout">
-          <span>↩</span> Logout
+          <LogOut size={16} /> Logout
         </button>
       </div>
     </div>

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Check, Info, X } from 'lucide-react';
 
 export interface ToastMessage {
   id: string;
@@ -33,12 +34,12 @@ const ToastItem: React.FC<{ toast: ToastMessage; onRemove: () => void }> = ({ to
   }, [onRemove]);
 
   const bgColor =
-    toast.type === 'success' ? '#059669' :
-    toast.type === 'error' ? '#dc2626' : '#2563eb';
+    toast.type === 'success' ? '#047857' :
+    toast.type === 'error' ? '#b91c1c' : '#1d4ed8';
 
   const icon =
-    toast.type === 'success' ? '✓' :
-    toast.type === 'error' ? '✕' : 'ℹ';
+    toast.type === 'success' ? <Check size={15} /> :
+    toast.type === 'error' ? <X size={15} /> : <Info size={15} />;
 
   return (
     <div
@@ -47,12 +48,13 @@ const ToastItem: React.FC<{ toast: ToastMessage; onRemove: () => void }> = ({ to
     >
       <span className="toast-icon" style={{ backgroundColor: bgColor }}>{icon}</span>
       <span className="toast-message">{toast.message}</span>
-      <button className="toast-close" onClick={() => { setIsExiting(true); setTimeout(onRemove, 300); }}>×</button>
+      <button className="toast-close" onClick={() => { setIsExiting(true); setTimeout(onRemove, 300); }}>
+        <X size={16} />
+      </button>
     </div>
   );
 };
 
-// Custom hook for managing toasts
 export const useToast = () => {
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
 
