@@ -1,6 +1,6 @@
+import api from '../auth/auth';
 import {
   collection,
-  addDoc,
   updateDoc,
   doc,
   getDocs,
@@ -27,6 +27,7 @@ export interface QueueEntry {
 const COLLECTION = 'queue_entries';
 
 // Generate next queue number based on current active (WAITING/SERVING) entries only
+/*
 const getNextQueueNumber = async (serviceCenterId: string): Promise<number> => {
   try {
     const q = query(
@@ -50,6 +51,7 @@ const getNextQueueNumber = async (serviceCenterId: string): Promise<number> => {
     return Math.floor(Math.random() * 900) + 100; // Fallback random number
   }
 };
+*/
 
 // Compute dynamic display positions from active entries.
 // Returns a map of entryId → display position (1-indexed, continuous).
@@ -79,9 +81,9 @@ export const computeDisplayPositions = (entries: QueueEntry[]): Map<string, numb
 export const joinQueue = async (
   serviceCenterId: string,
   serviceCenterName: string,
-  userId: string,
+  _userId: string,
   userEmail: string,
-  userName: string
+  _userName: string
 ): Promise<{ entryId: string; queueNumber: number }> => {
   // Check if user already has an active queue entry
   const existing = await getUserActiveQueue(userEmail);
@@ -89,25 +91,18 @@ export const joinQueue = async (
     throw new Error('You are already in a queue. Please leave your current queue first.');
   }
 
-  const queueNumber = await getNextQueueNumber(serviceCenterId);
-
   try {
-    const docRef = await addDoc(collection(db, COLLECTION), {
-      serviceCenterId,
-      serviceCenterName,
-      userId,
-      userEmail,
-      userName,
-      status: 'WAITING',
-      queueNumber,
-      joinedAt: new Date().toISOString(),
-    });
-
-    console.log('Queue entry created:', docRef.id, 'Queue #', queueNumber);
-    return { entryId: docRef.id, queueNumber };
+    const payload = {
+      serviceCenterName
+    };
+    const response = await api.post(`/queues/join/${serviceCenterId}`, payload);
+    const data = response.data.data;
+    
+    console.log('Queue entry created:', data.queueId, 'Queue #', data.position);
+    return { entryId: data.queueId, queueNumber: data.position };
   } catch (error: any) {
     console.error('Failed to join queue:', error);
-    throw new Error(error.message || 'Failed to join queue.');
+    throw new Error(error.response?.data?.message || error.message || 'Failed to join queue.');
   }
 };
 

@@ -34,10 +34,12 @@ public class SecurityConfig {
                         // 2. Public endpoints
                         .requestMatchers("/api/v1/auth/login", "/api/v1/auth/register").permitAll()
                         .requestMatchers("/api/v1/auth/google", "/api/v1/auth/register").permitAll()
-                        // 3. Admin-only endpoints
+                        // 3. Admin/Staff endpoints
                         .requestMatchers("/api/v1/auth/register/staff").hasAuthority("ROLE_ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/v1/service-centers").hasAnyAuthority("ADMIN", "STAFF", "ROLE_ADMIN", "ROLE_STAFF")
 
                         // 4. Protected endpoints
+                        .requestMatchers(HttpMethod.POST, "/api/v1/queues/join/**").authenticated()
                         .anyRequest().authenticated()
                 ).build();
     }

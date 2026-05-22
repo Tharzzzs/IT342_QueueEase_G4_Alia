@@ -1,3 +1,4 @@
+import api from '../auth/auth';
 import {
   collection,
   addDoc,
@@ -25,7 +26,6 @@ export interface ServiceCenter {
   assignedStaffEmail?: string;
   assignedStaffName?: string;
 }
-
 export interface StaffUser {
   id?: string;
   email: string;
@@ -40,15 +40,13 @@ const COLLECTION = 'service_centers';
 // Create a new service center
 export const createServiceCenter = async (data: Omit<ServiceCenter, 'id' | 'createdAt'>) => {
   try {
-    const docRef = await addDoc(collection(db, COLLECTION), {
-      ...data,
-      createdAt: new Date().toISOString(),
-    });
-    console.log('Service center created with ID:', docRef.id);
-    return docRef.id;
+    const response = await api.post('/service-centers', data);
+    const docId = response.data.data.centerId;
+    console.log('Service center created with ID:', docId);
+    return docId;
   } catch (error: any) {
     console.error('Failed to create service center:', error);
-    throw new Error(error.message || 'Failed to create service center. Check Firestore rules.');
+    throw new Error(error.response?.data?.message || error.message || 'Failed to create service center.');
   }
 };
 
