@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { BarChart3, Building2, ClipboardList, LogOut, UserPlus } from 'lucide-react';
+import { BarChart3, Building2, ClipboardList, LogOut, UserPlus, Home, History } from 'lucide-react';
 
 interface SidebarProps {
   role: string | null;
@@ -10,7 +10,9 @@ const Sidebar: React.FC<SidebarProps> = ({ role }) => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const handleLogout = () => {
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
+
+  const confirmLogout = () => {
     localStorage.clear();
     navigate('/login');
   };
@@ -30,13 +32,13 @@ const Sidebar: React.FC<SidebarProps> = ({ role }) => {
 
   return (
     <div className="sidebar">
-      <div className="sidebar-brand" onClick={() => navigate('/admin/dashboard')}>
+      <div className="sidebar-brand" onClick={() => navigate(role === 'USER' ? '/customer/home' : '/admin/dashboard')}>
         <div className="sidebar-logo">Q</div>
         <h1 className="sidebar-title">QueueEase</h1>
       </div>
 
       <nav className="sidebar-nav">
-        {navItem('Dashboard', '/admin/dashboard', <BarChart3 size={18} />)}
+        {role !== 'USER' && navItem('Dashboard', '/admin/dashboard', <BarChart3 size={18} />)}
 
         {role === 'ADMIN' && (
           <>
@@ -53,6 +55,14 @@ const Sidebar: React.FC<SidebarProps> = ({ role }) => {
             {navItem('Queue Monitor', '/admin/queue-monitor', <ClipboardList size={18} />)}
           </>
         )}
+
+        {role === 'USER' && (
+          <>
+            {navItem('Home', '/customer/home', <Home size={18} />)}
+            {navItem('My Queue', '/customer/queue-status', <ClipboardList size={18} />)}
+            {navItem('History', '/customer/history', <History size={18} />)}
+          </>
+        )}
       </nav>
 
       <div className="sidebar-footer">
@@ -63,10 +73,23 @@ const Sidebar: React.FC<SidebarProps> = ({ role }) => {
         <button onClick={() => navigate('/profile')} className="sidebar-logout" style={{ marginBottom: '10px' }}>
           <ClipboardList size={16} /> Profile
         </button>
-        <button onClick={handleLogout} className="sidebar-logout">
+        <button onClick={() => setShowLogoutModal(true)} className="sidebar-logout">
           <LogOut size={16} /> Logout
         </button>
       </div>
+
+      {showLogoutModal && (
+        <div className="modal-overlay" onClick={() => setShowLogoutModal(false)}>
+          <div className="modal-card" onClick={(e) => e.stopPropagation()}>
+            <h3 className="modal-title">Confirm Logout</h3>
+            <p style={{ marginBottom: '1.5rem', color: '#4b5563' }}>Are you sure you want to log out of your account?</p>
+            <div className="modal-actions">
+              <button type="button" onClick={() => setShowLogoutModal(false)} className="btn-secondary">Cancel</button>
+              <button type="button" onClick={confirmLogout} className="btn-primary-sm" style={{ backgroundColor: '#ef4444' }}>Logout</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, ClipboardList } from 'lucide-react';
+import Sidebar from '../../components/Sidebar';
 import { getUserQueueHistory, type QueueEntry } from './queue';
 
 const QueueHistory = () => {
@@ -25,10 +26,7 @@ const QueueHistory = () => {
     fetchHistory();
   }, [email, navigate]);
 
-  const handleLogout = () => {
-    localStorage.clear();
-    navigate('/login');
-  };
+
 
   const formatDateTime = (timestamp: any) => {
     if (!timestamp) return '--';
@@ -43,14 +41,9 @@ const QueueHistory = () => {
   };
 
   return (
-    <div className="customer-page">
-      <header className="customer-header">
-        <h1 className="customer-brand" onClick={() => navigate('/customer/home')} style={{ cursor: 'pointer' }}>QueueEase</h1>
-        <div className="customer-header-right">
-          <span className="customer-email">{email}</span>
-          <button onClick={handleLogout} className="customer-logout">Logout</button>
-        </div>
-      </header>
+    <div className="admin-layout">
+      <Sidebar role="USER" />
+      <div className="admin-main">
 
       <div className="customer-container">
         <div className="flex justify-between items-center mb-6">
@@ -105,6 +98,7 @@ const QueueHistory = () => {
             </table>
           </div>
         )}
+      </div>
       </div>
     </div>
   );

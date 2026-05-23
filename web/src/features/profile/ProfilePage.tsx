@@ -174,16 +174,7 @@ const ProfilePage = () => {
     </div>
   );
 
-  if (isCustomer) {
-    return (
-      <div className="customer-page">
-        <header className="customer-header">
-          <h1 className="customer-brand" onClick={() => navigate('/customer/home')}>QueueEase</h1>
-        </header>
-        {content}
-      </div>
-    );
-  }
+
 
   return (
     <div className="admin-layout">

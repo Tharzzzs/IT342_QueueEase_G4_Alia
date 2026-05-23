@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Building2, ChevronRight, Clock, ClipboardList, History, MapPin, Search, Star } from 'lucide-react';
 import Toast, { useToast } from '../../components/Toast';
+import Sidebar from '../../components/Sidebar';
 import { subscribeToServiceCenters, toggleFavoriteCenter, subscribeToFavorites, type ServiceCenter } from '../serviceCenter/serviceCenter';
 import { joinQueue, getUserActiveQueue, getWaitingCount } from './queue';
 
@@ -82,10 +83,7 @@ const CustomerHome = () => {
     }
   };
 
-  const handleLogout = () => {
-    localStorage.clear();
-    window.location.href = '/login';
-  };
+
 
   const filtered = centers.filter((c) => {
     const matchesSearch = c.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -96,27 +94,10 @@ const CustomerHome = () => {
   });
 
   return (
-    <div className="customer-page">
-      <header className="customer-header">
-        <h1 className="customer-brand" onClick={() => navigate('/customer/home')}>QueueEase</h1>
-        <div className="customer-header-right">
-          <button onClick={() => navigate('/customer/history')} className="btn-secondary btn-sm" style={{ marginRight: '10px' }}>
-            <History size={16} /> History
-          </button>
-          {hasActiveQueue && (
-            <button onClick={() => navigate('/customer/queue-status')} className="btn-queue-status">
-              <ClipboardList size={16} /> My Queue
-            </button>
-          )}
-          <button onClick={() => navigate('/profile')} className="btn-secondary btn-sm" style={{ marginRight: '10px' }}>
-            Profile
-          </button>
-          <span className="customer-email">{email}</span>
-          <button onClick={handleLogout} className="customer-logout">Logout</button>
-        </div>
-      </header>
-
-      <div className="customer-container">
+    <div className="admin-layout">
+      <Sidebar role="USER" />
+      <div className="admin-main">
+        <div className="customer-container">
         <div className="customer-hero">
           <h2 className="customer-hero-title">Find Services Near You</h2>
           <p className="customer-hero-subtitle">Join a queue remotely and save your time</p>
@@ -174,7 +155,7 @@ const CustomerHome = () => {
                 <div className="customer-center-info">
                   <div className="customer-center-top">
                     <span className="center-card-category" style={{ display: 'flex', alignItems: 'center' }}>
-                      {center.brandLogoUrl && <img src={center.brandLogoUrl} alt="logo" style={{width: '24px', height: '24px', borderRadius: '4px', objectFit: 'cover', marginRight: '8px'}} />}
+                      {center.brandLogoUrl && <img src={center.brandLogoUrl} alt="logo" style={{width: '64px', height: '64px', borderRadius: '4px', objectFit: 'cover', marginRight: '8px'}} />}
                       {center.category}
                     </span>
                     <div className="center-top-right">
@@ -212,6 +193,7 @@ const CustomerHome = () => {
         </div>
       </div>
       <Toast toasts={toasts} removeToast={removeToast} />
+      </div>
     </div>
   );
 };

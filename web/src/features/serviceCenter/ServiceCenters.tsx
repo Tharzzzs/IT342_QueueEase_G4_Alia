@@ -48,6 +48,8 @@ const ServiceCenters = () => {
   const [selectedStaffEmail, setSelectedStaffEmail] = useState('');
   const [staffList, setStaffList] = useState<StaffUser[]>([]);
   const [assignLoading, setAssignLoading] = useState(false);
+  const [centerToDelete, setCenterToDelete] = useState<ServiceCenter | null>(null);
+  const [centerToUnassign, setCenterToUnassign] = useState<ServiceCenter | null>(null);
 
   useEffect(() => {
     const unsub = subscribeToServiceCenters(
@@ -130,13 +132,19 @@ const ServiceCenters = () => {
     setShowModal(true);
   };
 
-  const handleDelete = async (center: ServiceCenter) => {
-    if (!window.confirm(`Are you sure you want to delete "${center.name}"?`)) return;
+  const handleDelete = (center: ServiceCenter) => {
+    setCenterToDelete(center);
+  };
+
+  const confirmDelete = async () => {
+    if (!centerToDelete) return;
     try {
-      await deleteServiceCenter(center.id!);
-      addToast('success', `"${center.name}" deleted.`);
+      await deleteServiceCenter(centerToDelete.id!);
+      addToast('success', `"${centerToDelete.name}" deleted.`);
     } catch (err: any) {
       addToast('error', err.message || 'Delete failed.');
+    } finally {
+      setCenterToDelete(null);
     }
   };
 
@@ -194,13 +202,19 @@ const ServiceCenters = () => {
     }
   };
 
-  const handleUnassignStaff = async (center: ServiceCenter) => {
-    if (!window.confirm(`Remove staff "${center.assignedStaffName || center.assignedStaffEmail}" from "${center.name}"?`)) return;
+  const handleUnassignStaff = (center: ServiceCenter) => {
+    setCenterToUnassign(center);
+  };
+
+  const confirmUnassign = async () => {
+    if (!centerToUnassign) return;
     try {
-      await unassignStaffFromCenter(center.id!);
-      addToast('success', `Staff unassigned from "${center.name}".`);
+      await unassignStaffFromCenter(centerToUnassign.id!);
+      addToast('success', `Staff unassigned from "${centerToUnassign.name}".`);
     } catch (err: any) {
       addToast('error', err.message || 'Failed to unassign staff.');
+    } finally {
+      setCenterToUnassign(null);
     }
   };
 
@@ -243,7 +257,7 @@ const ServiceCenters = () => {
               <div key={center.id} className="center-card">
                 <div className="center-card-header">
                   <div className="center-card-category">
-                    {center.brandLogoUrl && <img src={center.brandLogoUrl} alt="logo" style={{width: '24px', height: '24px', borderRadius: '4px', objectFit: 'cover', marginRight: '8px', display: 'inline-block', verticalAlign: 'middle'}} />}
+                    {center.brandLogoUrl && <img src={center.brandLogoUrl} alt="logo" style={{width: '64px', height: '64px', borderRadius: '4px', objectFit: 'cover', marginRight: '8px', display: 'inline-block', verticalAlign: 'middle'}} />}
                     {center.category}
                   </div>
                   <div className={`status-badge ${center.isActive ? 'status-active' : 'status-inactive'}`}>
@@ -412,6 +426,32 @@ const ServiceCenters = () => {
             </div>
           </div>
         )}
+        {centerToDelete && (
+          <div className="modal-overlay" onClick={() => setCenterToDelete(null)}>
+            <div className="modal-card" onClick={(e) => e.stopPropagation()}>
+              <h3 className="modal-title">Confirm Deletion</h3>
+              <p style={{ marginBottom: '1.5rem', color: '#4b5563' }}>Are you sure you want to delete "{centerToDelete.name}"?</p>
+              <div className="modal-actions">
+                <button type="button" onClick={() => setCenterToDelete(null)} className="btn-secondary">Cancel</button>
+                <button type="button" onClick={confirmDelete} className="btn-primary-sm" style={{ backgroundColor: '#ef4444' }}>Delete</button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {centerToUnassign && (
+          <div className="modal-overlay" onClick={() => setCenterToUnassign(null)}>
+            <div className="modal-card" onClick={(e) => e.stopPropagation()}>
+              <h3 className="modal-title">Confirm Unassign</h3>
+              <p style={{ marginBottom: '1.5rem', color: '#4b5563' }}>Remove staff "{centerToUnassign.assignedStaffName || centerToUnassign.assignedStaffEmail}" from "{centerToUnassign.name}"?</p>
+              <div className="modal-actions">
+                <button type="button" onClick={() => setCenterToUnassign(null)} className="btn-secondary">Cancel</button>
+                <button type="button" onClick={confirmUnassign} className="btn-primary-sm" style={{ backgroundColor: '#ef4444' }}>Unassign</button>
+              </div>
+            </div>
+          </div>
+        )}
+
       </div>
       <Toast toasts={toasts} removeToast={removeToast} />
     </div>

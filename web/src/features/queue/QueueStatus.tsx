@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Clock, ClipboardList, X } from 'lucide-react';
 import Toast, { useToast } from '../../components/Toast';
+import Sidebar from '../../components/Sidebar';
 import { subscribeToUserQueueWithPosition, leaveQueue, type QueueEntry } from './queue';
 
 const QueueStatus = () => {
@@ -12,6 +13,7 @@ const QueueStatus = () => {
   const [totalActive, setTotalActive] = useState(0);
   const [loading, setLoading] = useState(true);
   const [leaving, setLeaving] = useState(false);
+  const [showLeaveModal, setShowLeaveModal] = useState(false);
   const { toasts, addToast, removeToast } = useToast();
 
   useEffect(() => {
@@ -25,9 +27,9 @@ const QueueStatus = () => {
     return () => unsub();
   }, [email]);
 
-  const handleLeaveQueue = async () => {
+  const confirmLeaveQueue = async () => {
     if (!queueEntry?.id) return;
-    if (!window.confirm('Are you sure you want to leave the queue?')) return;
+    setShowLeaveModal(false);
     setLeaving(true);
     try {
       await leaveQueue(queueEntry.id);
@@ -46,10 +48,7 @@ const QueueStatus = () => {
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
 
-  const handleLogout = () => {
-    localStorage.clear();
-    window.location.href = '/login';
-  };
+
 
   if (loading) {
     return (
@@ -64,14 +63,9 @@ const QueueStatus = () => {
 
   if (!queueEntry) {
     return (
-      <div className="queue-status-page">
-        <header className="customer-header">
-          <h1 className="customer-brand" onClick={() => navigate('/customer/home')}>QueueEase</h1>
-          <div className="customer-header-right">
-            <span className="customer-email">{email}</span>
-            <button onClick={handleLogout} className="customer-logout">Logout</button>
-          </div>
-        </header>
+      <div className="admin-layout">
+        <Sidebar role="USER" />
+        <div className="admin-main">
         <div className="queue-status-empty">
           <div className="empty-queue-icon"><ClipboardList size={44} /></div>
           <h2>No Active Queue</h2>
@@ -81,6 +75,7 @@ const QueueStatus = () => {
           </button>
         </div>
         <Toast toasts={toasts} removeToast={removeToast} />
+        </div>
       </div>
     );
   }
@@ -88,14 +83,9 @@ const QueueStatus = () => {
   const isServing = queueEntry.status === 'SERVING';
 
   return (
-    <div className="queue-status-page">
-      <header className="customer-header">
-        <h1 className="customer-brand" onClick={() => navigate('/customer/home')}>QueueEase</h1>
-        <div className="customer-header-right">
-          <span className="customer-email">{email}</span>
-          <button onClick={handleLogout} className="customer-logout">Logout</button>
-        </div>
-      </header>
+    <div className="admin-layout">
+      <Sidebar role="USER" />
+      <div className="admin-main">
 
       <div className="queue-status-container">
         <div className={`queue-status-hero ${isServing ? 'hero-serving' : 'hero-waiting'}`}>
@@ -158,7 +148,7 @@ const QueueStatus = () => {
         )}
 
         {!isServing && (
-          <button onClick={handleLeaveQueue} disabled={leaving} className="btn-leave-queue">
+          <button onClick={() => setShowLeaveModal(true)} disabled={leaving} className="btn-leave-queue">
             {leaving ? 'Leaving...' : <><X size={16} /> Leave Queue</>}
           </button>
         )}
@@ -167,7 +157,22 @@ const QueueStatus = () => {
           <ArrowLeft size={16} /> Back to Home
         </button>
       </div>
+
+      {showLeaveModal && (
+        <div className="modal-overlay" onClick={() => setShowLeaveModal(false)}>
+          <div className="modal-card" onClick={(e) => e.stopPropagation()}>
+            <h3 className="modal-title">Confirm Leave</h3>
+            <p style={{ marginBottom: '1.5rem', color: '#4b5563' }}>Are you sure you want to leave the queue?</p>
+            <div className="modal-actions">
+              <button type="button" onClick={() => setShowLeaveModal(false)} className="btn-secondary">Cancel</button>
+              <button type="button" onClick={confirmLeaveQueue} className="btn-primary-sm" style={{ backgroundColor: '#ef4444' }}>Leave Queue</button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <Toast toasts={toasts} removeToast={removeToast} />
+      </div>
     </div>
   );
 };
