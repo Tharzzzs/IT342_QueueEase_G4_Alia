@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { BarChart3, Building2, ClipboardList, LogOut, UserPlus, Home, History } from 'lucide-react';
+import ProfileModal from '../features/profile/ProfileModal';
 
 interface SidebarProps {
   role: string | null;
@@ -11,6 +12,7 @@ const Sidebar: React.FC<SidebarProps> = ({ role }) => {
   const location = useLocation();
 
   const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [showProfileModal, setShowProfileModal] = useState(false);
 
   const confirmLogout = () => {
     localStorage.clear();
@@ -70,7 +72,7 @@ const Sidebar: React.FC<SidebarProps> = ({ role }) => {
           <span className="sidebar-role-dot"></span>
           {role}
         </div>
-        <button onClick={() => navigate('/profile')} className="sidebar-logout" style={{ marginBottom: '10px' }}>
+        <button onClick={() => setShowProfileModal(true)} className="sidebar-logout" style={{ marginBottom: '10px' }}>
           <ClipboardList size={16} /> Profile
         </button>
         <button onClick={() => setShowLogoutModal(true)} className="sidebar-logout">
@@ -89,6 +91,10 @@ const Sidebar: React.FC<SidebarProps> = ({ role }) => {
             </div>
           </div>
         </div>
+      )}
+
+      {showProfileModal && (
+        <ProfileModal onClose={() => setShowProfileModal(false)} />
       )}
     </div>
   );

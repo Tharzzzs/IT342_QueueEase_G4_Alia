@@ -10,7 +10,8 @@ import ServiceCenters from './features/serviceCenter/ServiceCenters';
 import QueueMonitor from './features/queue/QueueMonitor';
 import QueueStatus from './features/queue/QueueStatus';
 import QueueHistory from './features/queue/QueueHistory';
-import ProfilePage from './features/profile/ProfilePage';
+import QueueNotificationListener from './components/QueueNotificationListener';
+
 
 // Role-Based Guard Interface
 interface Props {
@@ -36,6 +37,7 @@ function App() {
   return (
     <GoogleOAuthProvider clientId="770395482652-o453hvr1sqlgfaqvedl5vj07tfkehf6f.apps.googleusercontent.com">
       <BrowserRouter>
+        <QueueNotificationListener />
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
@@ -88,11 +90,7 @@ function App() {
             </ProtectedRoute>
           } />
 
-          <Route path="/profile" element={
-            <ProtectedRoute allowedRoles={['ADMIN', 'STAFF', 'USER']}>
-              <ProfilePage />
-            </ProtectedRoute>
-          } />
+
 
           <Route path="/" element={<Navigate to="/login" />} />
         </Routes>

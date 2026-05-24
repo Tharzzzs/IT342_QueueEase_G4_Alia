@@ -260,7 +260,7 @@ const ServiceCenters = () => {
                     <img src={center.brandLogoUrl} alt="logo" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                   </div>
                 ) : (
-                  <div style={{ width: '100%', height: '14px', background: 'linear-gradient(to right, var(--blue-500), var(--blue-600))' }} />
+                  <div style={{ width: '100%', height: '14px', backgroundColor: 'var(--blue-600)' }} />
                 )}
                 <div style={{ padding: '1.5rem', flex: 1, display: 'flex', flexDirection: 'column' }}>
                   <div className="center-card-header">
