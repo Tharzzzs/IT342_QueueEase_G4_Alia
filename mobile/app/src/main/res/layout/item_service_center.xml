@@ -14,6 +14,26 @@
         android:layout_height="wrap_content"
         android:padding="16dp">
 
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cvLogoContainer"
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="0dp"
+            app:strokeWidth="1dp"
+            app:strokeColor="@color/gray_200"
+            android:visibility="gone"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/ivLogo"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:src="@android:drawable/ic_menu_gallery" />
+        </com.google.android.material.card.MaterialCardView>
+
         <LinearLayout
             android:id="@+id/llCategory"
             android:layout_width="wrap_content"
@@ -23,16 +43,10 @@
             android:background="@drawable/bg_pill_category"
             android:paddingHorizontal="12dp"
             android:paddingVertical="4dp"
-            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginStart="12dp"
+            app:layout_goneMarginStart="0dp"
+            app:layout_constraintStart_toEndOf="@id/cvLogoContainer"
             app:layout_constraintTop_toTopOf="parent">
-            
-            <ImageView
-                android:id="@+id/ivLogo"
-                android:layout_width="20dp"
-                android:layout_height="20dp"
-                android:layout_marginEnd="6dp"
-                android:scaleType="centerCrop"
-                android:visibility="gone" />
 
             <TextView
                 android:id="@+id/tvCategory"
@@ -57,10 +71,13 @@
             style="@style/QueueEase.Text.SectionTitle"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tvCategory"
+            android:layout_marginTop="8dp"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="8dp"
+            app:layout_goneMarginStart="0dp"
+            app:layout_constraintEnd_toStartOf="@id/ivFavorite"
+            app:layout_constraintStart_toEndOf="@id/cvLogoContainer"
+            app:layout_constraintTop_toBottomOf="@id/llCategory"
             tools:text="Central Bank Main Branch" />
 
         <TextView
@@ -69,17 +86,23 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
+            android:layout_marginStart="12dp"
+            app:layout_goneMarginStart="0dp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toEndOf="@id/cvLogoContainer"
             app:layout_constraintTop_toBottomOf="@id/tvName"
             tools:text="123 Financial District, NY" />
 
         <LinearLayout
             android:id="@+id/llStats"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginStart="12dp"
+            app:layout_goneMarginStart="0dp"
             android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/cvLogoContainer"
             app:layout_constraintTop_toBottomOf="@id/tvAddress">
 
             <LinearLayout

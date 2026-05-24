@@ -3,6 +3,7 @@ package edu.alia.queueease.features.auth
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.google.firebase.auth.FirebaseAuth
 import edu.alia.queueease.core.data.SessionManager
 import edu.alia.queueease.core.network.ApiClient
 import edu.alia.queueease.core.network.models.AuthResponse
@@ -34,6 +35,12 @@ class LoginViewModel : ViewModel() {
                         SessionManager.firebaseToken = body.firebaseToken
                         SessionManager.userId = body.userId
                         SessionManager.userName = "${body.firstname} ${body.lastname}".trim()
+                        SessionManager.avatarUrl = body.avatarUrl
+                        
+                        // Sign in to Firebase Auth using custom token if available
+                        body.firebaseToken?.let { token ->
+                            FirebaseAuth.getInstance().signInWithCustomToken(token)
+                        }
                         
                         _loginState.value = LoginState.Success(body.role ?: "USER")
                     } else {

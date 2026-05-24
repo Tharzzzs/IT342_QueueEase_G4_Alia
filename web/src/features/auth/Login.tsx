@@ -55,6 +55,9 @@ const Login = () => {
     } else if (data.name) {
       localStorage.setItem('userName', data.name);
     }
+    if (data.avatarUrl) {
+      localStorage.setItem('avatarUrl', data.avatarUrl);
+    }
   };
 
   const handleNavigation = (role: string) => {

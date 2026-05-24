@@ -10,11 +10,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import edu.alia.queueease.core.data.SessionManager
 import edu.alia.queueease.core.network.ApiClient
 import edu.alia.queueease.core.network.models.UpdateProfileRequest
+import edu.alia.queueease.core.repository.UserRepository
 import edu.alia.queueease.databinding.FragmentProfileBinding
 import edu.alia.queueease.features.auth.LoginActivity
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -42,7 +44,6 @@ class ProfileFragment : Fragment() {
             if (selectedImageUri != null) {
                 binding.tvAvatarInitials.visibility = View.GONE
                 Glide.with(this).load(selectedImageUri).into(binding.ivAvatar)
-                binding.btnSave.visibility = View.VISIBLE
             }
         }
     }
@@ -62,16 +63,49 @@ class ProfileFragment : Fragment() {
         binding.tvEmail.text = SessionManager.email ?: ""
         binding.tvRole.text = SessionManager.role ?: "USER"
         
-        // Setup Avatar
+        // Setup Avatar Initials placeholder
         val userName = SessionManager.userName ?: "User"
         binding.tvAvatarInitials.text = userName.firstOrNull()?.toString()?.uppercase() ?: "U"
 
-        // Load existing avatar if any (we would need to store it in SessionManager)
-        // For now, if SessionManager has avatarUrl, we load it
+        // Load existing avatar from local session cache
         val avatarUrl = SessionManager.avatarUrl
         if (!avatarUrl.isNullOrEmpty()) {
             binding.tvAvatarInitials.visibility = View.GONE
-            Glide.with(this).load(avatarUrl).into(binding.ivAvatar)
+            Glide.with(this).load(ApiClient.sanitizeUrl(avatarUrl)).into(binding.ivAvatar)
+        }
+
+        // Fallback local splitting to populate First/Last Name inputs while fetching Firestore details
+        val parts = userName.split(" ")
+        if (parts.isNotEmpty()) {
+            binding.etFirstname.setText(parts[0])
+            if (parts.size > 1) {
+                binding.etLastname.setText(parts.subList(1, parts.size).joinToString(" "))
+            }
+        }
+
+        // Fetch user profile from Firestore to populate name inputs with most recent details
+        val email = SessionManager.email ?: ""
+        if (email.isNotEmpty()) {
+            UserRepository.getUserProfile(email,
+                onResult = { profile ->
+                    if (profile != null && isAdded) {
+                        binding.etFirstname.setText(profile.firstname)
+                        binding.etLastname.setText(profile.lastname)
+                        profile.avatarUrl?.let { url ->
+                            if (url.isNotEmpty()) {
+                                SessionManager.avatarUrl = url
+                                binding.tvAvatarInitials.visibility = View.GONE
+                                Glide.with(this@ProfileFragment).load(ApiClient.sanitizeUrl(url)).into(binding.ivAvatar)
+                            }
+                        }
+                    }
+                },
+                onError = {
+                    if (isAdded) {
+                        Toast.makeText(context, "Failed to sync online profile details", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            )
         }
 
         binding.btnChangePhoto.setOnClickListener {
@@ -81,66 +115,98 @@ class ProfileFragment : Fragment() {
         }
 
         binding.btnSave.setOnClickListener {
-            uploadAvatar()
+            saveProfileChanges()
         }
 
         binding.btnLogout.setOnClickListener {
-            SessionManager.clearSession()
-            val intent = Intent(requireContext(), LoginActivity::class.java)
-            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            startActivity(intent)
+            AlertDialog.Builder(requireContext())
+                .setTitle("Logout")
+                .setMessage("Are you sure you want to logout?")
+                .setPositiveButton("Logout") { _, _ ->
+                    SessionManager.clearSession()
+                    com.google.firebase.auth.FirebaseAuth.getInstance().signOut()
+                    val intent = Intent(requireContext(), LoginActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    startActivity(intent)
+                }
+                .setNegativeButton("Cancel", null)
+                .show()
         }
     }
 
-    private fun uploadAvatar() {
-        if (selectedImageUri == null) return
+    private fun saveProfileChanges() {
+        val firstname = binding.etFirstname.text.toString().trim()
+        val lastname = binding.etLastname.text.toString().trim()
+
+        if (firstname.isEmpty() || lastname.isEmpty()) {
+            Toast.makeText(context, "Please fill in all fields", Toast.LENGTH_SHORT).show()
+            return
+        }
+
         binding.btnSave.isEnabled = false
         binding.btnSave.text = "Saving..."
 
-        try {
-            val file = getFileFromUri(selectedImageUri!!)
-            if (file == null) {
-                Toast.makeText(context, "Failed to read image", Toast.LENGTH_SHORT).show()
-                resetSaveButton()
-                return
-            }
+        if (selectedImageUri != null) {
+            // First upload the new avatar photo
+            try {
+                val file = getFileFromUri(selectedImageUri!!)
+                if (file == null) {
+                    Toast.makeText(context, "Failed to read image", Toast.LENGTH_SHORT).show()
+                    resetSaveButton()
+                    return
+                }
 
-            val requestFile = file.asRequestBody("image/*".toMediaTypeOrNull())
-            val body = MultipartBody.Part.createFormData("file", file.name, requestFile)
-            val folder = "avatars".toRequestBody("text/plain".toMediaTypeOrNull())
+                val requestFile = file.asRequestBody("image/*".toMediaTypeOrNull())
+                val body = MultipartBody.Part.createFormData("file", file.name, requestFile)
+                val folder = "avatars".toRequestBody("text/plain".toMediaTypeOrNull())
 
-            ApiClient.apiService.uploadFile(body, folder).enqueue(object : Callback<Map<String, String>> {
-                override fun onResponse(call: Call<Map<String, String>>, response: Response<Map<String, String>>) {
-                    if (response.isSuccessful && response.body() != null) {
-                        val url = response.body()!!["url"]
-                        updateProfileAvatarUrl(url ?: "")
-                    } else {
-                        Toast.makeText(context, "Upload failed", Toast.LENGTH_SHORT).show()
+                ApiClient.apiService.uploadFile(body, folder).enqueue(object : Callback<Map<String, String>> {
+                    override fun onResponse(call: Call<Map<String, String>>, response: Response<Map<String, String>>) {
+                        if (response.isSuccessful && response.body() != null) {
+                            val url = response.body()!!["url"] ?: ""
+                            updateProfileOnBackend(firstname, lastname, url)
+                        } else {
+                            Toast.makeText(context, "Upload failed", Toast.LENGTH_SHORT).show()
+                            resetSaveButton()
+                        }
+                    }
+
+                    override fun onFailure(call: Call<Map<String, String>>, t: Throwable) {
+                        Toast.makeText(context, "Upload error: ${t.message}", Toast.LENGTH_SHORT).show()
                         resetSaveButton()
                     }
-                }
-
-                override fun onFailure(call: Call<Map<String, String>>, t: Throwable) {
-                    Toast.makeText(context, "Upload error: ${t.message}", Toast.LENGTH_SHORT).show()
-                    resetSaveButton()
-                }
-            })
-
-        } catch (e: Exception) {
-            Toast.makeText(context, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
-            resetSaveButton()
+                })
+            } catch (e: Exception) {
+                Toast.makeText(context, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+                resetSaveButton()
+            }
+        } else {
+            // No new avatar, save names and keep existing avatarUrl
+            val existingAvatarUrl = SessionManager.avatarUrl ?: ""
+            updateProfileOnBackend(firstname, lastname, existingAvatarUrl)
         }
     }
 
-    private fun updateProfileAvatarUrl(url: String) {
-        val request = UpdateProfileRequest(avatarUrl = url)
+    private fun updateProfileOnBackend(firstname: String, lastname: String, avatarUrl: String) {
+        val request = UpdateProfileRequest(
+            firstname = firstname,
+            lastname = lastname,
+            avatarUrl = avatarUrl
+        )
         ApiClient.apiService.updateProfile(request).enqueue(object : Callback<Map<String, Any>> {
             override fun onResponse(call: Call<Map<String, Any>>, response: Response<Map<String, Any>>) {
                 resetSaveButton()
                 if (response.isSuccessful) {
-                    Toast.makeText(context, "Profile updated", Toast.LENGTH_SHORT).show()
-                    SessionManager.avatarUrl = url
-                    binding.btnSave.visibility = View.GONE
+                    Toast.makeText(context, "Profile updated successfully", Toast.LENGTH_SHORT).show()
+                    SessionManager.userName = "$firstname $lastname".trim()
+                    SessionManager.avatarUrl = avatarUrl
+                    binding.tvName.text = SessionManager.userName
+                    
+                    if (avatarUrl.isNotEmpty()) {
+                        binding.tvAvatarInitials.visibility = View.GONE
+                        Glide.with(this@ProfileFragment).load(ApiClient.sanitizeUrl(avatarUrl)).into(binding.ivAvatar)
+                    }
+                    selectedImageUri = null // Reset selection
                 } else {
                     Toast.makeText(context, "Update failed", Toast.LENGTH_SHORT).show()
                 }
@@ -155,7 +221,7 @@ class ProfileFragment : Fragment() {
 
     private fun resetSaveButton() {
         binding.btnSave.isEnabled = true
-        binding.btnSave.text = "Save Profile"
+        binding.btnSave.text = "Save Changes"
     }
 
     private fun getFileFromUri(uri: Uri): File? {

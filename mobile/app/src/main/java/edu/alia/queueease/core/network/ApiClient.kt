@@ -50,4 +50,13 @@ object ApiClient {
     val apiService: ApiService by lazy {
         retrofit.create(ApiService::class.java)
     }
+
+    fun sanitizeUrl(url: String?): String? {
+        if (url.isNullOrEmpty()) return url
+        return if (url.contains("localhost:8081")) {
+            url.replace("localhost:8081", "10.0.2.2:8081")
+        } else {
+            url
+        }
+    }
 }

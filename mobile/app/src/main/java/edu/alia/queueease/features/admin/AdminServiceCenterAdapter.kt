@@ -9,6 +9,7 @@ import android.view.View
 import com.bumptech.glide.Glide
 import edu.alia.queueease.R
 import edu.alia.queueease.core.models.ServiceCenter
+import edu.alia.queueease.core.network.ApiClient
 import edu.alia.queueease.databinding.ItemAdminServiceCenterBinding
 
 class AdminServiceCenterAdapter(
@@ -36,7 +37,7 @@ class AdminServiceCenterAdapter(
 
             if (!center.brandLogoUrl.isNullOrEmpty()) {
                 binding.ivLogo.visibility = View.VISIBLE
-                Glide.with(binding.root.context).load(center.brandLogoUrl).into(binding.ivLogo)
+                Glide.with(binding.root.context).load(ApiClient.sanitizeUrl(center.brandLogoUrl)).into(binding.ivLogo)
             } else {
                 binding.ivLogo.visibility = View.GONE
             }

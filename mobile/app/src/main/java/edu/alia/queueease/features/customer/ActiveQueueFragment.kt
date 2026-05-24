@@ -41,7 +41,9 @@ class ActiveQueueFragment : Fragment() {
 
     private fun setupListeners() {
         binding.btnBack.setOnClickListener {
-            findNavController().popBackStack()
+            if (!findNavController().popBackStack()) {
+                findNavController().navigate(R.id.customerHomeFragment)
+            }
         }
 
         binding.btnLeaveQueue.setOnClickListener {
@@ -54,8 +56,20 @@ class ActiveQueueFragment : Fragment() {
     private fun observeViewModel() {
         viewModel.activeEntry.observe(viewLifecycleOwner) { entry ->
             if (entry == null) {
-                // If entry becomes null (completed or cancelled), go back
-                findNavController().popBackStack()
+                // If entry becomes null (completed or cancelled), go back safely
+                view?.post {
+                    if (isAdded) {
+                        try {
+                            if (!findNavController().popBackStack()) {
+                                findNavController().navigate(R.id.customerHomeFragment)
+                            }
+                        } catch (e: Exception) {
+                            try {
+                                findNavController().navigate(R.id.customerHomeFragment)
+                            } catch (e2: Exception) {}
+                        }
+                    }
+                }
                 return@observe
             }
             currentEntryId = entry.id

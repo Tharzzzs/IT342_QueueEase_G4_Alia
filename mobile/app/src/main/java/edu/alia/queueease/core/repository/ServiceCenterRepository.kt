@@ -240,7 +240,8 @@ object ServiceCenterRepository {
                 createdBy = doc.getString("createdBy") ?: "",
                 createdAt = doc.getString("createdAt"),
                 assignedStaffEmail = doc.getString("assignedStaffEmail"),
-                assignedStaffName = doc.getString("assignedStaffName")
+                assignedStaffName = doc.getString("assignedStaffName"),
+                brandLogoUrl = doc.getString("brandLogoUrl")
             )
         } catch (e: Exception) {
             null

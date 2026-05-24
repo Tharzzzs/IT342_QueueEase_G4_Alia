@@ -76,7 +76,7 @@ class CustomerHomeViewModel : ViewModel() {
 
     fun toggleFavorite(centerId: String, isFavorite: Boolean) {
         val userEmail = SessionManager.email ?: return
-        ServiceCenterRepository.toggleFavorite(userEmail, centerId, !isFavorite,
+        ServiceCenterRepository.toggleFavorite(userEmail, centerId, isFavorite,
             onSuccess = { /* Snapshot listener handles update */ },
             onFailure = { _error.value = it }
         )
@@ -101,6 +101,10 @@ class CustomerHomeViewModel : ViewModel() {
                 _joinStatus.value = JoinStatus.Error(it)
             }
         )
+    }
+
+    fun resetJoinStatus() {
+        _joinStatus.value = JoinStatus.Idle
     }
 
     override fun onCleared() {

@@ -9,5 +9,6 @@ data class AuthResponse(
     val firebaseToken: String?,
     val email: String?,
     val firstname: String?,
-    val lastname: String?
+    val lastname: String?,
+    val avatarUrl: String?
 )

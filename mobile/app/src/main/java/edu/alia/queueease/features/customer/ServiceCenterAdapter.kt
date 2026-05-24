@@ -9,6 +9,7 @@ import android.view.View
 import com.bumptech.glide.Glide
 import edu.alia.queueease.R
 import edu.alia.queueease.core.models.ServiceCenter
+import edu.alia.queueease.core.network.ApiClient
 import edu.alia.queueease.databinding.ItemServiceCenterBinding
 
 class ServiceCenterAdapter(
@@ -39,10 +40,10 @@ class ServiceCenterAdapter(
             binding.tvEstWait.text = "~${item.waitingCount * 5}m" // Dummy calculation like web app
             
             if (!center.brandLogoUrl.isNullOrEmpty()) {
-                binding.ivLogo.visibility = View.VISIBLE
-                Glide.with(binding.root.context).load(center.brandLogoUrl).into(binding.ivLogo)
+                binding.cvLogoContainer.visibility = View.VISIBLE
+                Glide.with(binding.root.context).load(ApiClient.sanitizeUrl(center.brandLogoUrl)).into(binding.ivLogo)
             } else {
-                binding.ivLogo.visibility = View.GONE
+                binding.cvLogoContainer.visibility = View.GONE
             }
 
             if (item.isFavorite) {
@@ -61,7 +62,7 @@ class ServiceCenterAdapter(
             }
 
             binding.ivFavorite.setOnClickListener {
-                onFavoriteClick(center, !item.isFavorite)
+                onFavoriteClick(center, item.isFavorite)
             }
         }
     }

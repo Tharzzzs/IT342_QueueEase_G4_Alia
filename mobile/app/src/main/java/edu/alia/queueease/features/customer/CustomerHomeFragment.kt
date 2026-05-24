@@ -53,7 +53,7 @@ class CustomerHomeFragment : Fragment() {
                 viewModel.joinQueue(center)
             },
             onFavoriteClick = { center, isFav ->
-                viewModel.toggleFavorite(center.id, !isFav)
+                viewModel.toggleFavorite(center.id, isFav)
             }
         )
         binding.rvCenters.adapter = adapter
@@ -98,10 +98,12 @@ class CustomerHomeFragment : Fragment() {
                 }
                 is CustomerHomeViewModel.JoinStatus.Success -> {
                     Toast.makeText(context, "Successfully joined queue!", Toast.LENGTH_SHORT).show()
+                    viewModel.resetJoinStatus()
                     findNavController().navigate(R.id.action_home_to_activeQueue)
                 }
                 is CustomerHomeViewModel.JoinStatus.Error -> {
                     Toast.makeText(context, status.message, Toast.LENGTH_LONG).show()
+                    viewModel.resetJoinStatus()
                 }
                 else -> {}
             }

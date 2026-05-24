@@ -51,6 +51,9 @@ public class AuthFacade {
                     .email(user.getEmail())
                     .userId(user.getId())
                     .firebaseToken(firebaseToken)
+                    .firstname(user.getFirstname())
+                    .lastname(user.getLastname())
+                    .avatarUrl(user.getAvatarUrl())
                     .message("Login successful")
                     .build();
         }
@@ -68,6 +71,9 @@ public class AuthFacade {
                     .email(user.getEmail())
                     .userId(user.getId())
                     .firebaseToken(firebaseToken)
+                    .firstname(user.getFirstname())
+                    .lastname(user.getLastname())
+                    .avatarUrl(user.getAvatarUrl())
                     .message("Google login successful")
                     .build();
     }

@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import com.bumptech.glide.Glide
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import edu.alia.queueease.R
@@ -63,13 +64,41 @@ class EditCenterBottomSheet(private val centerToEdit: ServiceCenter? = null) : B
             binding.etName.setText(centerToEdit.name)
             binding.etCategory.setText(centerToEdit.category)
             binding.etAddress.setText(centerToEdit.address)
+            binding.etDescription.setText(centerToEdit.description)
+            binding.etOperatingHours.setText(centerToEdit.operatingHours)
+            binding.etMaxCapacity.setText(centerToEdit.maxCapacity.toString())
             existingLogoUrl = centerToEdit.brandLogoUrl
             
             if (!existingLogoUrl.isNullOrEmpty()) {
                 Glide.with(this).load(existingLogoUrl).into(binding.ivLogo)
             }
+            
+            binding.btnDelete.visibility = View.VISIBLE
+            binding.btnDelete.setOnClickListener {
+                AlertDialog.Builder(requireContext())
+                    .setTitle("Delete Center")
+                    .setMessage("Are you sure you want to permanently delete this service center?")
+                    .setPositiveButton("Delete") { _, _ ->
+                        binding.btnDelete.isEnabled = false
+                        binding.btnDelete.text = "Deleting..."
+                        ServiceCenterRepository.deleteServiceCenter(centerToEdit.id,
+                            onSuccess = {
+                                Toast.makeText(context, "Center deleted", Toast.LENGTH_SHORT).show()
+                                dismiss()
+                            },
+                            onFailure = { err ->
+                                Toast.makeText(context, err, Toast.LENGTH_SHORT).show()
+                                binding.btnDelete.isEnabled = true
+                                binding.btnDelete.text = "Delete Center"
+                            }
+                        )
+                    }
+                    .setNegativeButton("Cancel", null)
+                    .show()
+            }
         } else {
             binding.tvTitle.text = getString(R.string.create_center)
+            binding.btnDelete.visibility = View.GONE
         }
 
         binding.btnUploadLogo.setOnClickListener {
@@ -86,9 +115,13 @@ class EditCenterBottomSheet(private val centerToEdit: ServiceCenter? = null) : B
             val name = binding.etName.text.toString().trim()
             val category = binding.etCategory.text.toString().trim()
             val address = binding.etAddress.text.toString().trim()
+            val description = binding.etDescription.text.toString().trim()
+            val operatingHours = binding.etOperatingHours.text.toString().trim()
+            val maxCapacityStr = binding.etMaxCapacity.text.toString().trim()
+            val maxCapacity = maxCapacityStr.toIntOrNull() ?: 0
 
-            if (name.isEmpty() || category.isEmpty() || address.isEmpty()) {
-                Toast.makeText(context, "Please fill all fields", Toast.LENGTH_SHORT).show()
+            if (name.isEmpty() || category.isEmpty() || address.isEmpty() || operatingHours.isEmpty()) {
+                Toast.makeText(context, "Please fill all required fields", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
@@ -112,7 +145,7 @@ class EditCenterBottomSheet(private val centerToEdit: ServiceCenter? = null) : B
                     override fun onResponse(call: Call<Map<String, String>>, response: Response<Map<String, String>>) {
                         if (response.isSuccessful && response.body() != null) {
                             val url = response.body()!!["url"] ?: ""
-                            saveServiceCenter(name, category, address, url)
+                            saveServiceCenter(name, category, address, description, operatingHours, maxCapacity, url)
                         } else {
                             Toast.makeText(context, "Logo upload failed", Toast.LENGTH_SHORT).show()
                             resetSaveButton()
@@ -125,18 +158,21 @@ class EditCenterBottomSheet(private val centerToEdit: ServiceCenter? = null) : B
                     }
                 })
             } else {
-                saveServiceCenter(name, category, address, existingLogoUrl ?: "")
+                saveServiceCenter(name, category, address, description, operatingHours, maxCapacity, existingLogoUrl ?: "")
             }
         }
     }
 
-    private fun saveServiceCenter(name: String, category: String, address: String, logoUrl: String) {
+    private fun saveServiceCenter(name: String, category: String, address: String, description: String, operatingHours: String, maxCapacity: Int, logoUrl: String) {
         if (centerToEdit != null) {
             // Edit
             val updates = mutableMapOf<String, Any>(
                 "name" to name,
                 "category" to category,
-                "address" to address
+                "address" to address,
+                "description" to description,
+                "operatingHours" to operatingHours,
+                "maxCapacity" to maxCapacity
             )
             if (logoUrl.isNotEmpty()) updates["brandLogoUrl"] = logoUrl
 
@@ -157,9 +193,9 @@ class EditCenterBottomSheet(private val centerToEdit: ServiceCenter? = null) : B
                 name = name,
                 category = category,
                 address = address,
-                description = "",
-                operatingHours = "09:00 - 17:00",
-                maxCapacity = 100,
+                description = description,
+                operatingHours = operatingHours,
+                maxCapacity = maxCapacity,
                 isActive = true,
                 createdBy = userId,
                 brandLogoUrl = logoUrl
