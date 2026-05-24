@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { BarChart3, Building2, ClipboardList, LogOut, UserPlus, Home, History } from 'lucide-react';
 import ProfileModal from '../features/profile/ProfileModal';
+import RegisterStaff from '../features/auth/RegisterStaff';
 
 interface SidebarProps {
   role: string | null;
@@ -13,6 +14,7 @@ const Sidebar: React.FC<SidebarProps> = ({ role }) => {
 
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [showProfileModal, setShowProfileModal] = useState(false);
+  const [showRegisterStaffModal, setShowRegisterStaffModal] = useState(false);
 
   const confirmLogout = () => {
     localStorage.clear();
@@ -47,7 +49,13 @@ const Sidebar: React.FC<SidebarProps> = ({ role }) => {
             {navItem('Service Centers', '/admin/service-centers', <Building2 size={18} />)}
             <div className="sidebar-section">
               <p className="sidebar-section-title">Administration</p>
-              {navItem('Register Staff', '/admin/register-staff', <UserPlus size={18} />)}
+              <div
+                onClick={() => setShowRegisterStaffModal(true)}
+                className="sidebar-nav-item"
+              >
+                <span className="sidebar-nav-icon"><UserPlus size={18} /></span>
+                Register Staff
+              </div>
             </div>
           </>
         )}
@@ -95,6 +103,9 @@ const Sidebar: React.FC<SidebarProps> = ({ role }) => {
 
       {showProfileModal && (
         <ProfileModal onClose={() => setShowProfileModal(false)} />
+      )}
+      {showRegisterStaffModal && (
+        <RegisterStaff onClose={() => setShowRegisterStaffModal(false)} />
       )}
     </div>
   );

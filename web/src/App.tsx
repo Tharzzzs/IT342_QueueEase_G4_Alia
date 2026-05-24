@@ -5,7 +5,6 @@ import Login from './features/auth/Login';
 import Register from './features/auth/Register';
 import AdminDashboard from './features/serviceCenter/AdminDashboard';
 import CustomerHome from './features/queue/CustomerHome';
-import RegisterStaff from './features/auth/RegisterStaff';
 import ServiceCenters from './features/serviceCenter/ServiceCenters';
 import QueueMonitor from './features/queue/QueueMonitor';
 import QueueStatus from './features/queue/QueueStatus';
@@ -84,11 +83,7 @@ function App() {
             </ProtectedRoute>
           } />
 
-          <Route path="/admin/register-staff" element={
-            <ProtectedRoute allowedRoles={['ADMIN']}>
-              <RegisterStaff />
-            </ProtectedRoute>
-          } />
+
 
 
 
