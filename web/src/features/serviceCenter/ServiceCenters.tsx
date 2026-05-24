@@ -254,16 +254,23 @@ const ServiceCenters = () => {
             </div>
           ) : (
             filtered.map((center) => (
-              <div key={center.id} className="center-card">
-                <div className="center-card-header">
-                  <div className="center-card-category">
-                    {center.brandLogoUrl && <img src={center.brandLogoUrl} alt="logo" style={{width: '64px', height: '64px', borderRadius: '4px', objectFit: 'cover', marginRight: '8px', display: 'inline-block', verticalAlign: 'middle'}} />}
-                    {center.category}
+              <div key={center.id} className="center-card" style={{ padding: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+                {center.brandLogoUrl ? (
+                  <div style={{ width: '100%', height: '180px', backgroundColor: 'var(--gray-100)' }}>
+                    <img src={center.brandLogoUrl} alt="logo" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                   </div>
-                  <div className={`status-badge ${center.isActive ? 'status-active' : 'status-inactive'}`}>
-                    {center.isActive ? 'Active' : 'Inactive'}
+                ) : (
+                  <div style={{ width: '100%', height: '14px', background: 'linear-gradient(to right, var(--blue-500), var(--blue-600))' }} />
+                )}
+                <div style={{ padding: '1.5rem', flex: 1, display: 'flex', flexDirection: 'column' }}>
+                  <div className="center-card-header">
+                    <div className="center-card-category">
+                      {center.category}
+                    </div>
+                    <div className={`status-badge ${center.isActive ? 'status-active' : 'status-inactive'}`}>
+                      {center.isActive ? 'Active' : 'Inactive'}
+                    </div>
                   </div>
-                </div>
                 <h3 className="center-card-name">{center.name}</h3>
                 <p className="center-card-desc">{center.description || 'No description provided.'}</p>
                 <div className="center-card-details">
@@ -314,6 +321,7 @@ const ServiceCenters = () => {
                     <button onClick={() => handleDelete(center)} className="btn-action btn-delete">Delete</button>
                   </div>
                 )}
+                </div>
               </div>
             ))
           )}

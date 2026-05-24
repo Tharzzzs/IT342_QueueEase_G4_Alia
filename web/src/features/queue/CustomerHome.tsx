@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Building2, ChevronRight, Clock, ClipboardList, History, MapPin, Search, Star } from 'lucide-react';
+import { Building2, ChevronRight, Clock, ClipboardList, MapPin, Search, Star } from 'lucide-react';
 import Toast, { useToast } from '../../components/Toast';
 import Sidebar from '../../components/Sidebar';
 import { subscribeToServiceCenters, toggleFavoriteCenter, subscribeToFavorites, type ServiceCenter } from '../serviceCenter/serviceCenter';
@@ -151,11 +151,15 @@ const CustomerHome = () => {
             </div>
           ) : (
             filtered.map((center) => (
-              <div key={center.id} className="customer-center-card">
-                <div className="customer-center-info">
+              <div key={center.id} className="customer-center-card" style={{ padding: '1.25rem', overflow: 'hidden' }}>
+                {center.brandLogoUrl && (
+                  <div style={{ width: '120px', height: '120px', flexShrink: 0, borderRadius: 'var(--radius-xl)', overflow: 'hidden', backgroundColor: 'var(--gray-100)' }}>
+                    <img src={center.brandLogoUrl} alt="logo" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  </div>
+                )}
+                <div className="customer-center-info" style={{ flex: 1, minWidth: 0 }}>
                   <div className="customer-center-top">
-                    <span className="center-card-category" style={{ display: 'flex', alignItems: 'center' }}>
-                      {center.brandLogoUrl && <img src={center.brandLogoUrl} alt="logo" style={{width: '64px', height: '64px', borderRadius: '4px', objectFit: 'cover', marginRight: '8px'}} />}
+                    <span className="center-card-category">
                       {center.category}
                     </span>
                     <div className="center-top-right">
