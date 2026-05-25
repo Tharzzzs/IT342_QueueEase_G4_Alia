@@ -26,7 +26,7 @@ const RegisterStaff: React.FC<RegisterStaffProps> = ({ onClose }) => {
     setLoading(true);
     try {
       const token = localStorage.getItem('token');
-      await axios.post('http://localhost:8081/api/v1/auth/register/staff', formData, {
+      await axios.post('https://queueease-backend-evab.onrender.com/api/v1/auth/register/staff', formData, {
         headers: { Authorization: `Bearer ${token}` }
       });
       alert('Staff Member Registered Successfully!');
