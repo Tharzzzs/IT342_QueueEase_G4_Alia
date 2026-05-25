@@ -109,6 +109,19 @@ class ActiveQueueFragment : Fragment() {
             }
         }
 
+        viewModel.currentlyServing.observe(viewLifecycleOwner) { servingList ->
+            if (servingList.isNotEmpty()) {
+                binding.tvCurrentlyServingLabel.visibility = View.VISIBLE
+                binding.tvCurrentlyServing.visibility = View.VISIBLE
+                binding.currentlyServingDivider.visibility = View.VISIBLE
+                binding.tvCurrentlyServing.text = servingList.joinToString(", ") { "#${it.queueNumber}" }
+            } else {
+                binding.tvCurrentlyServingLabel.visibility = View.GONE
+                binding.tvCurrentlyServing.visibility = View.GONE
+                binding.currentlyServingDivider.visibility = View.GONE
+            }
+        }
+
         viewModel.leaveStatus.observe(viewLifecycleOwner) { status ->
             when (status) {
                 is ActiveQueueViewModel.LeaveStatus.Loading -> {

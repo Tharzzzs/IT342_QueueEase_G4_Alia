@@ -132,10 +132,14 @@ export const callNext = async (serviceCenterId: string): Promise<QueueEntry | nu
 
     if (snapshot.empty) return null;
 
-    // Sort client-side by queueNumber
+    // Sort client-side by joinedAt to match first-come first-served
     const sorted = snapshot.docs
       .map((d) => ({ id: d.id, ...d.data() } as QueueEntry))
-      .sort((a, b) => a.queueNumber - b.queueNumber);
+      .sort((a, b) => {
+        const aTime = a.joinedAt ? (a.joinedAt.toDate ? a.joinedAt.toDate().getTime() : new Date(a.joinedAt).getTime()) : 0;
+        const bTime = b.joinedAt ? (b.joinedAt.toDate ? b.joinedAt.toDate().getTime() : new Date(b.joinedAt).getTime()) : 0;
+        return aTime - bTime;
+      });
 
     const next = sorted[0];
     const docRef = doc(db, COLLECTION, next.id!);
@@ -270,7 +274,7 @@ export const subscribeToUserQueue = (
 // Provides both the user's entry and their current position number.
 export const subscribeToUserQueueWithPosition = (
   userEmail: string,
-  callback: (entry: QueueEntry | null, position: number, totalActive: number) => void
+  callback: (entry: QueueEntry | null, position: number, totalActive: number, currentlyServing: QueueEntry[]) => void
 ) => {
   // First, subscribe to the user's own entry
   let currentEntry: QueueEntry | null = null;
@@ -286,18 +290,19 @@ export const subscribeToUserQueueWithPosition = (
     }
 
     if (!entry || !entry.serviceCenterId) {
-      callback(null, 0, 0);
+      callback(null, 0, 0, []);
       return;
     }
 
     // Subscribe to the full queue for this service center to compute position
     queueUnsub = subscribeToQueue(entry.serviceCenterId, (_entries, positionMap) => {
       if (!currentEntry || !currentEntry.id) {
-        callback(null, 0, 0);
+        callback(null, 0, 0, []);
         return;
       }
       const position = positionMap.get(currentEntry.id) || 0;
-      callback(currentEntry, position, positionMap.size);
+      const currentlyServing = _entries.filter(e => e.status === 'SERVING');
+      callback(currentEntry, position, positionMap.size, currentlyServing);
     });
   });
 

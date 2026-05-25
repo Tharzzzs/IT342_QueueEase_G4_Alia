@@ -85,6 +85,32 @@
             android:background="@color/gray_200" />
 
         <TextView
+            android:id="@+id/tvCurrentlyServingLabel"
+            style="@style/QueueEase.Text.SectionLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Currently Serving"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/tvCurrentlyServing"
+            style="@style/QueueEase.Text.SectionTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:textColor="#166534"
+            android:visibility="gone"
+            tools:text="#42" />
+
+        <View
+            android:id="@+id/currentlyServingDivider"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginVertical="16dp"
+            android:background="@color/gray_200"
+            android:visibility="gone" />
+
+        <TextView
             style="@style/QueueEase.Text.SectionLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

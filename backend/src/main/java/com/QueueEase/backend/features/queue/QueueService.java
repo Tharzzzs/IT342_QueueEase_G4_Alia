@@ -74,8 +74,7 @@ public class QueueService {
 
     private int getNextQueueNumber(String centerId) throws ExecutionException, InterruptedException {
         Query q = db.collection("queue_entries")
-                .whereEqualTo("serviceCenterId", centerId)
-                .whereIn("status", List.of("WAITING", "SERVING"));
+                .whereEqualTo("serviceCenterId", centerId);
         
         List<QueryDocumentSnapshot> snapshots = q.get().get().getDocuments();
         

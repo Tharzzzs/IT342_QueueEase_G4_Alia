@@ -18,6 +18,9 @@ class ActiveQueueViewModel : ViewModel() {
     private val _totalActive = MutableLiveData<Int>()
     val totalActive: LiveData<Int> = _totalActive
 
+    private val _currentlyServing = MutableLiveData<List<QueueEntry>>()
+    val currentlyServing: LiveData<List<QueueEntry>> = _currentlyServing
+
     private val _leaveStatus = MutableLiveData<LeaveStatus>()
     val leaveStatus: LiveData<LeaveStatus> = _leaveStatus
 
@@ -29,10 +32,11 @@ class ActiveQueueViewModel : ViewModel() {
 
     private fun subscribeToQueue() {
         val userEmail = SessionManager.email ?: return
-        unsub = QueueRepository.subscribeToUserQueueWithPosition(userEmail) { entry, pos, total ->
+        unsub = QueueRepository.subscribeToUserQueueWithPosition(userEmail) { entry, pos, total, serving ->
             _activeEntry.value = entry
             _position.value = pos
             _totalActive.value = total
+            _currentlyServing.value = serving
         }
     }
 

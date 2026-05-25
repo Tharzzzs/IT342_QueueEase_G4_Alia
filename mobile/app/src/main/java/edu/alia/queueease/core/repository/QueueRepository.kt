@@ -22,17 +22,22 @@ object QueueRepository {
     private fun parseIsoDate(iso: String?): Long {
         if (iso.isNullOrEmpty()) return 0L
         return try {
-            val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US)
-            sdf.timeZone = TimeZone.getTimeZone("UTC")
-            sdf.parse(iso)?.time ?: 0L
-        } catch (e: Exception) {
-            try {
-                val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US)
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                java.time.Instant.parse(iso).toEpochMilli()
+            } else {
+                val normalized = if (iso.contains(".")) {
+                    val base = iso.substringBeforeLast(".")
+                    val frac = iso.substringAfterLast(".").substringBefore("Z").padEnd(3, '0').take(3)
+                    "$base.$frac" + "Z"
+                } else {
+                    iso.replace("Z", ".000Z")
+                }
+                val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US)
                 sdf.timeZone = TimeZone.getTimeZone("UTC")
-                sdf.parse(iso)?.time ?: 0L
-            } catch (e2: Exception) {
-                0L
+                sdf.parse(normalized)?.time ?: 0L
             }
+        } catch (e: Exception) {
+            0L
         }
     }
 
@@ -93,7 +98,6 @@ object QueueRepository {
     private fun getNextQueueNumber(serviceCenterId: String, callback: (Int) -> Unit) {
         db.collection(COLLECTION)
             .whereEqualTo("serviceCenterId", serviceCenterId)
-            .whereIn("status", listOf("WAITING", "SERVING"))
             .get()
             .addOnSuccessListener { snapshot ->
                 val today = todayStart()
@@ -159,7 +163,7 @@ object QueueRepository {
                             completedAt = doc.getString("completedAt")
                         )
                     }
-                    .sortedBy { it.queueNumber }
+                    .sortedBy { parseIsoDate(it.joinedAt) }
                 val next = sorted.first()
                 db.collection(COLLECTION).document(next.id)
                     .update(
@@ -243,7 +247,7 @@ object QueueRepository {
 
     fun subscribeToUserQueueWithPosition(
         userEmail: String,
-        callback: (entry: QueueEntry?, position: Int, totalActive: Int) -> Unit
+        callback: (entry: QueueEntry?, position: Int, totalActive: Int, currentlyServing: List<QueueEntry>) -> Unit
     ): () -> Unit {
         var queueUnsub: ListenerRegistration? = null
 
@@ -252,13 +256,14 @@ object QueueRepository {
             queueUnsub = null
 
             if (entry == null || entry.serviceCenterId.isEmpty()) {
-                callback(null, 0, 0)
+                callback(null, 0, 0, emptyList())
                 return@subscribeToUserQueue
             }
 
-            queueUnsub = subscribeToQueue(entry.serviceCenterId) { _, positionMap ->
+            queueUnsub = subscribeToQueue(entry.serviceCenterId) { _entries, positionMap ->
                 val position = positionMap[entry.id] ?: 0
-                callback(entry, position, positionMap.size)
+                val currentlyServing = _entries.filter { it.status == "SERVING" }
+                callback(entry, position, positionMap.size, currentlyServing)
             }
         }
 

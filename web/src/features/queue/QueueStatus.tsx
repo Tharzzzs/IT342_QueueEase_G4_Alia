@@ -16,12 +16,15 @@ const QueueStatus = () => {
   const [showLeaveModal, setShowLeaveModal] = useState(false);
   const { toasts, addToast, removeToast } = useToast();
 
+  const [currentlyServing, setCurrentlyServing] = useState<QueueEntry[]>([]);
+
   useEffect(() => {
     if (!email) return;
-    const unsub = subscribeToUserQueueWithPosition(email, (entry, pos, total) => {
+    const unsub = subscribeToUserQueueWithPosition(email, (entry, pos, total, serving) => {
       setQueueEntry(entry);
       setPosition(pos);
       setTotalActive(total);
+      setCurrentlyServing(serving || []);
       setLoading(false);
     });
     return () => unsub();
@@ -92,7 +95,7 @@ const QueueStatus = () => {
           <div className="hero-badge">
             {isServing ? 'Now Serving' : 'In Queue'}
           </div>
-          <div className="hero-number">#{position || queueEntry.queueNumber}</div>
+          <div className="hero-number">#{queueEntry.queueNumber}</div>
           <p className="hero-center">{queueEntry.serviceCenterName}</p>
         </div>
 
@@ -105,12 +108,20 @@ const QueueStatus = () => {
           </div>
           <div className="queue-detail-row">
             <span className="queue-detail-label">Queue Number</span>
-            <span className="queue-detail-value">#{position || queueEntry.queueNumber}</span>
+            <span className="queue-detail-value">#{queueEntry.queueNumber}</span>
           </div>
           {queueEntry.status === 'WAITING' && totalActive > 0 && (
             <div className="queue-detail-row">
               <span className="queue-detail-label">Position in Queue</span>
               <span className="queue-detail-value">{position} of {totalActive}</span>
+            </div>
+          )}
+          {currentlyServing.length > 0 && (
+            <div className="queue-detail-row" style={{ backgroundColor: '#f0fdf4', borderRadius: '8px', padding: '12px' }}>
+              <span className="queue-detail-label" style={{ color: '#166534', fontWeight: 'bold' }}>Currently Serving</span>
+              <span className="queue-detail-value" style={{ color: '#15803d', fontWeight: 'bold', fontSize: '1.2rem' }}>
+                {currentlyServing.map(s => `#${s.queueNumber}`).join(', ')}
+              </span>
             </div>
           )}
           <div className="queue-detail-row">
