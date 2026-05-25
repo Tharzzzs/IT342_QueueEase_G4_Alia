@@ -1,0 +1,15 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="120dp"
+    android:height="120dp"
+    android:viewportWidth="120"
+    android:viewportHeight="120">
+    <!-- Blue rounded background -->
+    <path
+        android:fillColor="@color/blue_700"
+        android:pathData="M24,0 L96,0 C109.25,0 120,10.75 120,24 L120,96 C120,109.25 109.25,120 96,120 L24,120 C10.75,120 0,109.25 0,96 L0,24 C0,10.75 10.75,0 24,0 Z" />
+    
+    <!-- White Q -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M 58 28 C 39.222 28 24 43.222 24 62 C 24 80.778 39.222 96 58 96 C 63.854 96 69.362 94.521 74.22 91.936 L 86.586 104.303 L 94.303 96.586 L 81.332 83.615 C 87.971 77.925 92 69.431 92 62 C 92 43.222 76.778 28 58 28 Z M 58 40 C 70.15 40 80 49.85 80 62 C 80 74.15 70.15 84 58 84 C 45.85 84 36 74.15 36 62 C 36 49.85 45.85 40 58 40 Z" />
+</vector>
