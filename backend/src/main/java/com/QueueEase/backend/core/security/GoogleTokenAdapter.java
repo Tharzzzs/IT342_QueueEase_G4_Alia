@@ -10,7 +10,7 @@ import java.util.Collections;
 
 @Component
 public class GoogleTokenAdapter implements ExternalTokenVerifier {
-    private static final String CLIENT_ID = "623398128884-sf3jpkoq155roh7d6br8nd3f61p8gi0i.apps.googleusercontent.com";
+    private static final String CLIENT_ID = "770395482652-o453hvr1sqlgfaqvedl5vj07tfkehf6f.apps.googleusercontent.com";
 
 
     @Override
