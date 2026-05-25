@@ -57,6 +57,42 @@ class LoginViewModel : ViewModel() {
         })
     }
 
+    fun loginWithGoogle(idToken: String) {
+        _loginState.value = LoginState.Loading
+        ApiClient.apiService.googleLogin(mapOf("token" to idToken)).enqueue(object : Callback<AuthResponse> {
+            override fun onResponse(call: Call<AuthResponse>, response: Response<AuthResponse>) {
+                if (response.isSuccessful) {
+                    val body = response.body()
+                    if (body?.success == true && body.accessToken != null) {
+                        SessionManager.accessToken = body.accessToken
+                        SessionManager.role = body.role
+                        SessionManager.email = body.email
+                        SessionManager.firebaseToken = body.firebaseToken
+                        SessionManager.userId = body.userId
+                        SessionManager.userName = "${body.firstname} ${body.lastname}".trim()
+                        SessionManager.avatarUrl = body.avatarUrl
+                        
+                        // Sign in to Firebase Auth using custom token if available
+                        body.firebaseToken?.let { token ->
+                            FirebaseAuth.getInstance().signInWithCustomToken(token)
+                        }
+                        
+                        _loginState.value = LoginState.Success(body.role ?: "USER")
+                    } else {
+                        _loginState.value = LoginState.Error(body?.message ?: "Backend rejected login")
+                    }
+                } else {
+                    val errorStr = response.errorBody()?.string()?.take(100) ?: "Unknown error"
+                    _loginState.value = LoginState.Error("HTTP ${response.code()}: $errorStr")
+                }
+            }
+
+            override fun onFailure(call: Call<AuthResponse>, t: Throwable) {
+                _loginState.value = LoginState.Error("Network error: ${t.message}")
+            }
+        })
+    }
+
     sealed class LoginState {
         object Loading : LoginState()
         data class Success(val role: String) : LoginState()

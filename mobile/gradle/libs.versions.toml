@@ -20,6 +20,7 @@ swiperefreshlayout = "1.1.0"
 fragmentKtx = "1.6.2"
 googleServices = "4.4.0"
 glide = "4.16.0"
+playServicesAuth = "21.1.1"
 
 [libraries]
 # Core AndroidX
@@ -71,6 +72,7 @@ fragment-ktx = { group = "androidx.fragment", name = "fragment-ktx", version.ref
 
 # Glide
 glide = { group = "com.github.bumptech.glide", name = "glide", version.ref = "glide" }
+play-services-auth = { group = "com.google.android.gms", name = "play-services-auth", version.ref = "playServicesAuth" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

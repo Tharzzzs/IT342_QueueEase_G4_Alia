@@ -88,6 +88,9 @@ dependencies {
     // Glide
     implementation("com.github.bumptech.glide:glide:4.16.0")
 
+    // Google Sign-In
+    implementation(libs.play.services.auth)
+
     // Unit Testing
     testImplementation(libs.junit)
 
