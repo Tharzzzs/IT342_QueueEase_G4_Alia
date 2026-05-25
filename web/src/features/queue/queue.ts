@@ -17,7 +17,7 @@ export interface QueueEntry {
   userId: string;
   userEmail: string;
   userName: string;
-  status: 'WAITING' | 'SERVING' | 'COMPLETED' | 'CANCELLED';
+  status: 'WAITING' | 'SERVING' | 'COMPLETED' | 'CANCELLED' | 'MISSED';
   queueNumber: number;
   joinedAt?: any;
   servedAt?: any;
@@ -166,6 +166,20 @@ export const markServed = async (entryId: string) => {
   } catch (error: any) {
     console.error('Failed to mark served:', error);
     throw new Error(error.message || 'Failed to mark as served.');
+  }
+};
+
+// Mark as missed (SERVING → MISSED)
+export const markMissed = async (entryId: string) => {
+  try {
+    const docRef = doc(db, COLLECTION, entryId);
+    await updateDoc(docRef, {
+      status: 'MISSED',
+      completedAt: new Date().toISOString(),
+    });
+  } catch (error: any) {
+    console.error('Failed to mark missed:', error);
+    throw new Error(error.message || 'Failed to mark as missed.');
   }
 };
 

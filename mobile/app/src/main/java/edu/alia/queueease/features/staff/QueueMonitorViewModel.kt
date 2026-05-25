@@ -40,8 +40,23 @@ class QueueMonitorViewModel : ViewModel() {
     private fun subscribeToQueue() {
         val id = centerId ?: return
         queueUnsub = QueueRepository.subscribeToQueue(id) { entries, _ ->
-            // Update queue list (only WAITING and SERVING are returned by subscribeToQueue)
-            _queue.value = entries
+            // Update queue list, filtering out CANCELLED
+            // Sort so COMPLETED is at bottom, and newest joinedAt is at top
+            val sortedEntries = entries
+                .filter { it.status != "CANCELLED" }
+                .sortedWith(Comparator { a, b ->
+                    val aDone = a.status == "COMPLETED" || a.status == "MISSED"
+                    val bDone = b.status == "COMPLETED" || b.status == "MISSED"
+                    if (aDone && !bDone) 1
+                    else if (!aDone && bDone) -1
+                    else {
+                        val aTime = a.joinedAt ?: ""
+                        val bTime = b.joinedAt ?: ""
+                        bTime.compareTo(aTime) // Descending order
+                    }
+                })
+                
+            _queue.value = sortedEntries
             
             // Find current serving
             val serving = entries.find { it.status == "SERVING" }
@@ -72,6 +87,19 @@ class QueueMonitorViewModel : ViewModel() {
         QueueRepository.markServed(servingId,
             onSuccess = {
                 _actionStatus.value = ActionStatus.Success("Marked as served")
+            },
+            onFailure = {
+                _actionStatus.value = ActionStatus.Error(it)
+            }
+        )
+    }
+
+    fun markMissed() {
+        val servingId = _currentServing.value?.id ?: return
+        _actionStatus.value = ActionStatus.Loading
+        QueueRepository.markMissed(servingId,
+            onSuccess = {
+                _actionStatus.value = ActionStatus.Success("Marked as No Show")
             },
             onFailure = {
                 _actionStatus.value = ActionStatus.Error(it)

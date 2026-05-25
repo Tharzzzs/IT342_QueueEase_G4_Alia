@@ -48,6 +48,10 @@ class QueueMonitorFragment : Fragment() {
         binding.btnMarkServed.setOnClickListener {
             viewModel.markServed()
         }
+
+        binding.btnMarkMissed.setOnClickListener {
+            viewModel.markMissed()
+        }
     }
 
     private fun observeViewModel() {
@@ -67,10 +71,12 @@ class QueueMonitorFragment : Fragment() {
                 binding.tvCurrentServingNumber.text = "#${serving.queueNumber}"
                 binding.tvCurrentServingName.text = serving.userName
                 binding.btnMarkServed.isEnabled = true
+                binding.btnMarkMissed.isEnabled = true
             } else {
                 binding.tvCurrentServingNumber.text = "--"
                 binding.tvCurrentServingName.text = "No one currently serving"
                 binding.btnMarkServed.isEnabled = false
+                binding.btnMarkMissed.isEnabled = false
             }
         }
 
@@ -80,11 +86,12 @@ class QueueMonitorFragment : Fragment() {
                     binding.progressBar.visibility = View.VISIBLE
                     binding.btnCallNext.isEnabled = false
                     binding.btnMarkServed.isEnabled = false
+                    binding.btnMarkMissed.isEnabled = false
                 }
                 is QueueMonitorViewModel.ActionStatus.Success -> {
                     binding.progressBar.visibility = View.GONE
                     binding.btnCallNext.isEnabled = true
-                    // btnMarkServed is handled by currentServing observer
+                    // btnMarkServed and btnMarkMissed are handled by currentServing observer
                     Toast.makeText(context, status.message, Toast.LENGTH_SHORT).show()
                     viewModel.resetStatus()
                 }

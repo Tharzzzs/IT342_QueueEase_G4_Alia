@@ -3,7 +3,7 @@ import { Check, Clock, Link2, Megaphone } from 'lucide-react';
 import Sidebar from '../../components/Sidebar';
 import Toast, { useToast } from '../../components/Toast';
 import { subscribeToStaffCenter, type ServiceCenter } from '../serviceCenter/serviceCenter';
-import { subscribeToQueue, callNext, markServed, getCenterQueueHistory, type QueueEntry } from './queue';
+import { subscribeToQueue, callNext, markServed, markMissed, getCenterQueueHistory, type QueueEntry } from './queue';
 
 const QueueMonitor = () => {
   const role = localStorage.getItem('role');
@@ -82,6 +82,15 @@ const QueueMonitor = () => {
       addToast('success', `${entry.userName} marked as served.`);
     } catch (err: any) {
       addToast('error', err.message || 'Failed to mark as served.');
+    }
+  };
+
+  const handleMarkMissed = async (entry: QueueEntry) => {
+    try {
+      await markMissed(entry.id!);
+      addToast('info', `${entry.userName} marked as No Show.`);
+    } catch (err: any) {
+      addToast('error', err.message || 'Failed to mark as No Show.');
     }
   };
 
@@ -186,9 +195,14 @@ const QueueMonitor = () => {
                         <p className="serving-email">{entry.userEmail}</p>
                       </div>
                     </div>
-                    <button onClick={() => handleMarkServed(entry)} className="btn-mark-served">
-                      <Check size={16} /> Mark Served
-                    </button>
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                      <button onClick={() => handleMarkMissed(entry)} className="btn-action" style={{ background: '#e11d48', color: 'white', padding: '0.5rem 1rem' }}>
+                        No Show
+                      </button>
+                      <button onClick={() => handleMarkServed(entry)} className="btn-mark-served">
+                        <Check size={16} /> Mark Served
+                      </button>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -211,7 +225,18 @@ const QueueMonitor = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {queueEntries.filter((e) => e.status !== 'CANCELLED').map((entry) => (
+                    {[...queueEntries]
+                      .filter((e) => e.status !== 'CANCELLED')
+                      .sort((a, b) => {
+                        const aDone = (a.status === 'COMPLETED' || a.status === 'MISSED');
+                        const bDone = (b.status === 'COMPLETED' || b.status === 'MISSED');
+                        if (aDone && !bDone) return 1;
+                        if (!aDone && bDone) return -1;
+                        const aTime = a.joinedAt ? (a.joinedAt.toDate ? a.joinedAt.toDate().getTime() : new Date(a.joinedAt).getTime()) : 0;
+                        const bTime = b.joinedAt ? (b.joinedAt.toDate ? b.joinedAt.toDate().getTime() : new Date(b.joinedAt).getTime()) : 0;
+                        return bTime - aTime;
+                      })
+                      .map((entry) => (
                       <tr key={entry.id} className={`queue-row queue-row-${entry.status.toLowerCase()}`}>
                         <td className="queue-number-cell">{positionMap.get(entry.id!) || entry.queueNumber}</td>
                         <td className="queue-name-cell">{entry.userName}</td>
@@ -220,9 +245,13 @@ const QueueMonitor = () => {
                         <td><span className={`status-pill status-${entry.status.toLowerCase()}`}>{entry.status}</span></td>
                         <td>
                           {entry.status === 'SERVING' && (
-                            <button onClick={() => handleMarkServed(entry)} className="btn-action btn-complete-sm">Complete</button>
+                            <div style={{ display: 'flex', gap: '4px' }}>
+                              <button onClick={() => handleMarkServed(entry)} className="btn-action btn-complete-sm">Complete</button>
+                              <button onClick={() => handleMarkMissed(entry)} className="btn-action btn-complete-sm" style={{ background: '#e11d48', color: 'white' }}>No Show</button>
+                            </div>
                           )}
                           {entry.status === 'COMPLETED' && <span className="text-muted">Done</span>}
+                          {entry.status === 'MISSED' && <span className="text-muted" style={{ color: '#e11d48', fontWeight: 600 }}>No Show</span>}
                           {entry.status === 'WAITING' && <span className="text-muted">Waiting...</span>}
                         </td>
                       </tr>

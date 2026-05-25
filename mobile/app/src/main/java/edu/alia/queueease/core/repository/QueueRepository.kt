@@ -190,6 +190,18 @@ object QueueRepository {
             .addOnFailureListener { onFailure(it.message ?: "Failed to mark served") }
     }
 
+    fun markMissed(entryId: String, onSuccess: () -> Unit, onFailure: (String) -> Unit) {
+        db.collection(COLLECTION).document(entryId)
+            .update(
+                mapOf(
+                    "status" to "MISSED",
+                    "completedAt" to nowIso()
+                )
+            )
+            .addOnSuccessListener { onSuccess() }
+            .addOnFailureListener { onFailure(it.message ?: "Failed to mark missed") }
+    }
+
     fun subscribeToQueue(
         serviceCenterId: String,
         callback: (List<QueueEntry>, Map<String, Int>) -> Unit

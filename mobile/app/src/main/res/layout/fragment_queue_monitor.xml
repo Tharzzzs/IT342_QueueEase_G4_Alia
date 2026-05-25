@@ -48,15 +48,27 @@
             android:orientation="horizontal">
 
             <Button
+                android:id="@+id/btnMarkMissed"
+                style="@style/QueueEase.Button.Outline"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginEnd="4dp"
+                android:backgroundTint="#ffe4e6"
+                android:textColor="#e11d48"
+                android:text="No Show" />
+
+            <Button
                 android:id="@+id/btnMarkServed"
                 style="@style/QueueEase.Button.Outline"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:layout_marginEnd="8dp"
+                android:layout_marginEnd="4dp"
+                android:layout_marginStart="4dp"
                 android:backgroundTint="@color/white"
                 android:textColor="@color/green_600"
-                android:text="Mark Served" />
+                android:text="Served" />
 
             <Button
                 android:id="@+id/btnCallNext"
@@ -64,10 +76,10 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:layout_marginStart="8dp"
+                android:layout_marginStart="4dp"
                 android:backgroundTint="@color/white"
                 android:textColor="@color/green_600"
-                android:text="Call Next" />
+                android:text="Next" />
         </LinearLayout>
     </LinearLayout>
 

@@ -33,12 +33,27 @@ class QueueMonitorAdapter : ListAdapter<QueueEntry, QueueMonitorAdapter.ViewHold
             binding.tvCustomerName.text = entry.userName
             binding.tvStatus.text = entry.status
 
-            if (entry.status == "SERVING") {
-                binding.tvStatus.setBackgroundResource(R.drawable.bg_pill_serving)
-                binding.tvStatus.setTextColor(binding.root.context.getColor(R.color.green_600))
-            } else {
-                binding.tvStatus.setBackgroundResource(R.drawable.bg_pill_waiting)
-                binding.tvStatus.setTextColor(binding.root.context.getColor(R.color.amber_500))
+            when (entry.status) {
+                "SERVING" -> {
+                    binding.tvStatus.setBackgroundResource(R.drawable.bg_pill_serving)
+                    binding.tvStatus.setTextColor(binding.root.context.getColor(R.color.green_600))
+                    binding.tvStatus.text = "SERVING"
+                }
+                "COMPLETED" -> {
+                    binding.tvStatus.setBackgroundResource(R.drawable.bg_pill_completed)
+                    binding.tvStatus.setTextColor(binding.root.context.getColor(R.color.green_600))
+                    binding.tvStatus.text = "DONE"
+                }
+                "MISSED" -> {
+                    binding.tvStatus.setBackgroundResource(R.drawable.bg_pill_cancelled)
+                    binding.tvStatus.setTextColor(binding.root.context.getColor(R.color.red_500))
+                    binding.tvStatus.text = "NO SHOW"
+                }
+                else -> {
+                    binding.tvStatus.setBackgroundResource(R.drawable.bg_pill_waiting)
+                    binding.tvStatus.setTextColor(binding.root.context.getColor(R.color.amber_500))
+                    binding.tvStatus.text = entry.status
+                }
             }
 
             // Format date
