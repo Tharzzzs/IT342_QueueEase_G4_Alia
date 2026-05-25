@@ -1,0 +1,9 @@
+.git
+.gitignore
+.idea
+.mvn
+target/
+*.md
+backend_test_logs.txt
+Dockerfile
+.dockerignore
