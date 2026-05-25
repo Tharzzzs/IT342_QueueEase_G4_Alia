@@ -91,14 +91,22 @@ class ActiveQueueFragment : Fragment() {
             }
 
             if (entry.status == "SERVING") {
-                binding.heroCard.setBackgroundResource(R.drawable.bg_hero_serving)
+                binding.heroCard.setCardBackgroundColor(requireContext().getColor(R.color.green_50))
+                binding.heroCard.strokeColor = requireContext().getColor(R.color.green_500)
+                binding.tvQueueNumber.setTextColor(requireContext().getColor(R.color.green_700))
                 binding.tvTitle.text = getString(R.string.now_serving)
                 binding.tvStatusSubtitle.text = getString(R.string.your_turn_subtitle)
+                binding.tvStatusSubtitle.setTextColor(requireContext().getColor(R.color.green_700))
+                binding.tvStatusSubtitle.setBackgroundResource(R.drawable.bg_pill_serving)
             } else {
-                binding.heroCard.setBackgroundResource(R.drawable.bg_hero_queue)
+                binding.heroCard.setCardBackgroundColor(requireContext().getColor(R.color.surface))
+                binding.heroCard.strokeColor = requireContext().getColor(R.color.border_normal)
+                binding.tvQueueNumber.setTextColor(requireContext().getColor(R.color.blue_600))
                 binding.tvTitle.text = getString(R.string.active_queue)
                 val pos = viewModel.position.value ?: 0
                 binding.tvStatusSubtitle.text = "Position: $pos • Waiting"
+                binding.tvStatusSubtitle.setTextColor(requireContext().getColor(R.color.gray_700))
+                binding.tvStatusSubtitle.setBackgroundResource(R.drawable.bg_pill_waiting)
             }
         }
 

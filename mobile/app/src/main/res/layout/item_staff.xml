@@ -1,23 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    style="@style/QueueEase.Card.Elevated"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="?attr/selectableItemBackground"
-    android:clickable="true"
-    android:focusable="true"
-    android:orientation="horizontal"
-    android:padding="16dp">
-
-    <ImageView
-        android:layout_width="24dp"
-        android:layout_height="24dp"
-        android:layout_gravity="center_vertical"
-        android:src="@android:drawable/ic_menu_myplaces"
-        android:tint="@color/gray_500" />
+    android:layout_marginHorizontal="@dimen/spacing_lg"
+    android:layout_marginVertical="@dimen/spacing_sm"
+    app:strokeColor="@color/border_normal"
+    app:strokeWidth="1dp">
 
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="?attr/selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true"
+        android:orientation="horizontal"
+        android:paddingHorizontal="24dp"
+        android:paddingVertical="16dp"
+        android:gravity="center_vertical">
+
+    <FrameLayout
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="@drawable/bg_icon_circle_blue">
+        
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_people"
+            android:tint="@color/blue_600" />
+    </FrameLayout>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
         android:layout_marginStart="16dp"
         android:orientation="vertical">
 
@@ -26,12 +45,23 @@
             style="@style/QueueEase.Text.SectionTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="16sp" />
+            android:textSize="18sp"
+            android:textColor="@color/gray_900" />
 
         <TextView
             android:id="@+id/tvStaffEmail"
-            style="@style/QueueEase.Text.Caption"
+            style="@style/QueueEase.Text.Body"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:textColor="@color/gray_500" />
     </LinearLayout>
+    
+    <ImageView
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:src="@drawable/ic_chevron_right"
+        android:tint="@color/gray_400" />
+        
 </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

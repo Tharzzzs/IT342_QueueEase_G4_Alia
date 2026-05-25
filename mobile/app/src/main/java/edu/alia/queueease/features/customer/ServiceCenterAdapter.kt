@@ -38,13 +38,12 @@ class ServiceCenterAdapter(
             binding.tvAddress.text = center.address
             binding.tvWaitingCount.text = item.waitingCount.toString()
             binding.tvEstWait.text = "~${item.waitingCount * 5}m" // Dummy calculation like web app
-            
-            if (!center.brandLogoUrl.isNullOrEmpty()) {
-                binding.cvLogoContainer.visibility = View.VISIBLE
-                Glide.with(binding.root.context).load(ApiClient.sanitizeUrl(center.brandLogoUrl)).into(binding.ivLogo)
-            } else {
-                binding.cvLogoContainer.visibility = View.GONE
-            }
+
+            Glide.with(binding.ivLogo.context)
+                .load(ApiClient.sanitizeUrl(center.brandLogoUrl))
+                .placeholder(R.drawable.ic_store)
+                .error(R.drawable.ic_store)
+                .into(binding.ivLogo)
 
             if (item.isFavorite) {
                 binding.ivFavorite.setImageResource(android.R.drawable.btn_star_big_on)

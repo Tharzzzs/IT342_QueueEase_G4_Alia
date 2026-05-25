@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Border Radius -->
-    <dimen name="radius_sm">8dp</dimen>
-    <dimen name="radius_md">12dp</dimen>
-    <dimen name="radius_lg">14dp</dimen>
+    <dimen name="radius_sm">6dp</dimen>
+    <dimen name="radius_md">8dp</dimen>
+    <dimen name="radius_lg">12dp</dimen>
     <dimen name="radius_xl">16dp</dimen>
+    <dimen name="radius_2xl">20dp</dimen>
     <dimen name="radius_pill">999dp</dimen>
 
     <!-- Spacing -->

@@ -1,65 +1,95 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/gray_50">
 
-    <!-- Active Queue Banner Container -->
-    <FrameLayout
-        android:id="@+id/bannerContainer"
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:background="@color/blue_600"
+        app:elevation="0dp">
 
-    <LinearLayout
-        android:id="@+id/headerContainer"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/white"
-        android:orientation="vertical"
-        android:padding="16dp"
-        android:elevation="2dp"
-        app:layout_constraintTop_toBottomOf="@id/bannerContainer">
-
-        <TextView
-            style="@style/QueueEase.Text.PageTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/find_services" />
-
-        <TextView
-            style="@style/QueueEase.Text.Body"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:text="@string/join_queue_subtitle" />
-
-        <com.google.android.material.textfield.TextInputLayout
-            style="@style/QueueEase.TextInput"
+        <!-- Header Content -->
+        <LinearLayout
+            android:id="@+id/headerContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            app:startIconDrawable="@android:drawable/ic_menu_search"
-            app:startIconTint="@color/gray_400">
+            android:orientation="vertical"
+            android:paddingHorizontal="@dimen/spacing_xl"
+            android:paddingTop="48dp"
+            android:paddingBottom="@dimen/spacing_md"
+            app:layout_scrollFlags="scroll|enterAlways">
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etSearch"
-                android:layout_width="match_parent"
+            <TextView
+                style="@style/QueueEase.Text.PageTitle"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:hint="@string/search_hint"
-                android:inputType="text" />
-        </com.google.android.material.textfield.TextInputLayout>
+                android:textColor="@color/white"
+                android:textSize="32sp"
+                android:text="@string/find_services" />
 
+            <TextView
+                style="@style/QueueEase.Text.Body"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_xs"
+                android:textColor="@color/blue_100"
+                android:text="@string/join_queue_subtitle" />
+
+            <!-- Pill Shaped Search Bar -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="64dp"
+                android:layout_marginTop="24dp"
+                android:background="@drawable/bg_search_pill"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingHorizontal="20dp"
+                android:elevation="0dp"
+                android:layout_marginBottom="16dp">
+
+                <ImageView
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:src="@android:drawable/ic_menu_search"
+                    app:tint="@color/gray_400"
+                    android:layout_marginEnd="@dimen/spacing_md" />
+
+                <EditText
+                    android:id="@+id/etSearch"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="@null"
+                    android:hint="@string/search_hint"
+                    android:textColorHint="@color/gray_400"
+                    android:textColor="@color/gray_800"
+                    android:textSize="18sp"
+                    android:fontFamily="sans-serif-medium"
+                    android:singleLine="true"
+                    android:imeOptions="actionSearch"
+                    android:inputType="text" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <!-- Seamless Tabs -->
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/tabLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:background="@color/surface"
             app:tabIndicatorColor="@color/blue_600"
+            app:tabIndicatorHeight="4dp"
+            app:tabIndicatorFullWidth="false"
             app:tabSelectedTextColor="@color/blue_600"
-            app:tabTextColor="@color/gray_500">
+            app:tabTextColor="@color/gray_500"
+            app:tabTextAppearance="@style/QueueEase.Text.Body"
+            app:layout_scrollFlags="snap">
 
             <com.google.android.material.tabs.TabItem
                 android:layout_width="wrap_content"
@@ -71,27 +101,37 @@
                 android:layout_height="wrap_content"
                 android:text="@string/favorites" />
         </com.google.android.material.tabs.TabLayout>
-    </LinearLayout>
+    </com.google.android.material.appbar.AppBarLayout>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvCenters"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:clipToPadding="false"
-        android:paddingVertical="8dp"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/headerContainer"
-        tools:listitem="@layout/item_service_center" />
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-    <ProgressBar
-        android:id="@+id/progressBar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/headerContainer" />
+        <!-- Active Queue Banner Container -->
+        <FrameLayout
+            android:id="@+id/bannerContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:elevation="6dp" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvCenters"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:paddingHorizontal="@dimen/spacing_lg"
+            android:paddingTop="@dimen/spacing_lg"
+            android:paddingBottom="100dp"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            tools:listitem="@layout/item_service_center" />
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="gone" />
+    </FrameLayout>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

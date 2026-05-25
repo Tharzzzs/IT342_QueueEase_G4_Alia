@@ -35,12 +35,11 @@ class AdminServiceCenterAdapter(
             binding.tvName.text = center.name
             binding.tvCategory.text = center.category
 
-            if (!center.brandLogoUrl.isNullOrEmpty()) {
-                binding.ivLogo.visibility = View.VISIBLE
-                Glide.with(binding.root.context).load(ApiClient.sanitizeUrl(center.brandLogoUrl)).into(binding.ivLogo)
-            } else {
-                binding.ivLogo.visibility = View.GONE
-            }
+            Glide.with(binding.ivLogo.context)
+                .load(ApiClient.sanitizeUrl(center.brandLogoUrl))
+                .placeholder(R.drawable.ic_store)
+                .error(R.drawable.ic_store)
+                .into(binding.ivLogo)
 
             if (center.isActive) {
                 binding.tvStatus.text = "ACTIVE"

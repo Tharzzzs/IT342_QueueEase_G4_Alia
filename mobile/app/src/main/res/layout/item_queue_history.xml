@@ -1,98 +1,151 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    style="@style/QueueEase.Card"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginHorizontal="16dp"
-    android:layout_marginVertical="8dp">
+    android:clipToPadding="false">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
+    <!-- Timeline Line -->
+    <View
+        android:id="@+id/timelineLine"
+        android:layout_width="2dp"
+        android:layout_height="0dp"
+        android:background="@color/border_normal"
+        android:layout_marginStart="24dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+    <!-- Timeline Dot -->
+    <View
+        android:id="@+id/timelineDot"
+        android:layout_width="12dp"
+        android:layout_height="12dp"
+        android:background="@drawable/bg_icon_circle_blue"
+        android:layout_marginTop="24dp"
+        app:layout_constraintStart_toStartOf="@id/timelineLine"
+        app:layout_constraintEnd_toEndOf="@id/timelineLine"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.card.MaterialCardView
+        style="@style/QueueEase.Card.Elevated"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:padding="16dp">
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="@dimen/spacing_lg"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        app:strokeColor="@color/border_normal"
+        app:strokeWidth="1dp"
+        app:layout_constraintStart_toEndOf="@id/timelineLine"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
 
-        <TextView
-            android:id="@+id/tvDate"
-            style="@style/QueueEase.Text.Caption"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:text="Oct 24, 2023 - 14:30" />
-
-        <TextView
-            android:id="@+id/tvStatus"
-            style="@style/QueueEase.Pill"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/bg_pill_completed"
-            android:textColor="@color/gray_700"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:text="COMPLETED" />
-
-        <TextView
-            android:id="@+id/tvCenterName"
-            style="@style/QueueEase.Text.SectionTitle"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tvDate"
-            tools:text="Central Bank Main Branch" />
-
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:orientation="horizontal"
-            app:layout_constraintTop_toBottomOf="@id/tvCenterName">
+            android:padding="16dp">
 
-            <LinearLayout
+            <TextView
+                android:id="@+id/tvDate"
+                style="@style/QueueEase.Text.Caption"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="@id/tvStatus"
+                android:textColor="@color/gray_500"
+                tools:text="Oct 24, 2023 - 14:30" />
+
+            <TextView
+                android:id="@+id/tvStatus"
+                style="@style/QueueEase.Pill"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_status_badge_success"
+                android:textColor="@color/green_700"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="COMPLETED" />
+
+            <TextView
+                android:id="@+id/tvCenterName"
+                style="@style/QueueEase.Text.SectionTitle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical">
-
-                <TextView
-                    style="@style/QueueEase.Text.Caption"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Queue Number" />
-
-                <TextView
-                    android:id="@+id/tvQueueNumber"
-                    style="@style/QueueEase.Text.SectionTitle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/blue_600"
-                    tools:text="#42" />
-            </LinearLayout>
+                android:layout_marginTop="12dp"
+                android:textSize="18sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tvStatus"
+                tools:text="Central Bank Main Branch" />
 
             <LinearLayout
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical">
+                android:layout_marginTop="16dp"
+                android:orientation="horizontal"
+                android:background="@color/gray_50"
+                android:padding="12dp"
+                android:gravity="center_vertical"
+                app:layout_constraintTop_toBottomOf="@id/tvCenterName">
 
-                <TextView
-                    style="@style/QueueEase.Text.Caption"
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="Wait Time" />
+                    android:layout_weight="1"
+                    android:orientation="vertical">
 
-                <TextView
-                    android:id="@+id/tvWaitTime"
-                    style="@style/QueueEase.Text.SectionTitle"
-                    android:layout_width="wrap_content"
+                    <TextView
+                        style="@style/QueueEase.Text.Caption"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Queue Number"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:id="@+id/tvQueueNumber"
+                        style="@style/QueueEase.Text.SectionTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/blue_600"
+                        android:textSize="20sp"
+                        tools:text="#42" />
+                </LinearLayout>
+
+                <View
+                    android:layout_width="1dp"
+                    android:layout_height="match_parent"
+                    android:background="@color/border_normal"
+                    android:layout_marginHorizontal="16dp"/>
+
+                <LinearLayout
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/gray_800"
-                    tools:text="24m" />
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        style="@style/QueueEase.Text.Caption"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Wait Time"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:id="@+id/tvWaitTime"
+                        style="@style/QueueEase.Text.SectionTitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/gray_900"
+                        android:textSize="20sp"
+                        tools:text="24m" />
+                </LinearLayout>
             </LinearLayout>
-        </LinearLayout>
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
-</com.google.android.material.card.MaterialCardView>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,130 +1,197 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/gray_50"
-    android:padding="24dp">
+    android:background="@color/gray_50">
 
-    <LinearLayout
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/bg_card"
-        android:orientation="vertical"
-        android:padding="32dp"
-        android:gravity="center"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent">
+        android:background="@color/blue_600"
+        app:elevation="0dp">
 
-        <FrameLayout
-            android:layout_width="120dp"
-            android:layout_height="120dp"
-            android:layout_marginBottom="16dp">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="@dimen/spacing_xl"
+            android:paddingTop="24dp"
+            android:paddingBottom="24dp"
+            app:layout_scrollFlags="scroll|enterAlways">
 
-            <ImageView
-                android:id="@+id/ivAvatar"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@drawable/bg_button_primary"
-                android:scaleType="centerCrop"
-                android:clipToOutline="true" />
-                
             <TextView
-                android:id="@+id/tvAvatarInitials"
+                style="@style/QueueEase.Text.PageTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:text="Q"
                 android:textColor="@color/white"
-                android:textSize="40sp"
-                android:textStyle="bold" />
-                
-        </FrameLayout>
+                android:textSize="32sp"
+                android:text="Profile" />
+        </LinearLayout>
+    </com.google.android.material.appbar.AppBarLayout>
 
-        <Button
-            android:id="@+id/btnChangePhoto"
-            style="@style/QueueEase.Button.Outline"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:text="Change Photo" />
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <TextView
-            android:id="@+id/tvName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="User Name"
-            android:textColor="@color/gray_900"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            android:layout_marginBottom="8dp" />
-
-        <TextView
-            android:id="@+id/tvEmail"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="user@example.com"
-            android:textColor="@color/gray_500"
-            android:textSize="16sp"
-            android:layout_marginBottom="16dp" />
-
-        <TextView
-            android:id="@+id/tvRole"
-            style="@style/QueueEase.Pill"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/bg_pill_category"
-            android:text="USER"
-            android:textColor="@color/blue_600"
-            android:layout_marginBottom="16dp" />
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/tilFirstname"
-            style="@style/QueueEase.TextInput"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="12dp"
-            android:hint="First Name">
+            android:orientation="vertical"
+            android:paddingHorizontal="@dimen/spacing_xl"
+            android:paddingBottom="48dp">
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etFirstname"
+            <com.google.android.material.card.MaterialCardView
+                style="@style/QueueEase.Card.Elevated"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="textPersonName"
-                android:maxLines="1" />
-        </com.google.android.material.textfield.TextInputLayout>
+                android:layout_marginTop="24dp"
+                android:layout_marginBottom="16dp"
+                app:strokeColor="@color/border_normal"
+                app:strokeWidth="1dp">
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/tilLastname"
-            style="@style/QueueEase.TextInput"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="24dp"
-            android:hint="Last Name">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="24dp"
+                    android:gravity="center_horizontal">
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etLastname"
+                    <FrameLayout
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:layout_marginBottom="16dp">
+
+                        <ImageView
+                            android:id="@+id/ivAvatar"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="@drawable/bg_button_primary"
+                            android:scaleType="centerCrop"
+                            android:clipToOutline="true"
+                            android:outlineProvider="background" />
+                            
+                        <TextView
+                            android:id="@+id/tvAvatarInitials"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:text="Q"
+                            android:textColor="@color/white"
+                            android:textSize="36sp"
+                            android:textStyle="bold" />
+                            
+                    </FrameLayout>
+
+                    <Button
+                        android:id="@+id/btnChangePhoto"
+                        style="@style/QueueEase.Button.Outline"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="16dp"
+                        android:text="Change Photo" />
+
+                    <TextView
+                        android:id="@+id/tvName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        tools:text="User Name"
+                        android:textColor="@color/gray_900"
+                        android:textSize="24sp"
+                        android:textStyle="bold"
+                        android:layout_marginBottom="4dp" />
+
+                    <TextView
+                        android:id="@+id/tvEmail"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        tools:text="user@example.com"
+                        android:textColor="@color/gray_500"
+                        android:textSize="16sp"
+                        android:layout_marginBottom="12dp" />
+
+                    <TextView
+                        android:id="@+id/tvRole"
+                        style="@style/QueueEase.Pill"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/bg_pill_category"
+                        tools:text="USER"
+                        android:textColor="@color/blue_600" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <TextView
+                style="@style/QueueEase.Text.SectionLabel"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="textPersonName"
-                android:maxLines="1" />
-        </com.google.android.material.textfield.TextInputLayout>
+                android:text="Personal Information"
+                android:layout_marginBottom="8dp" />
 
-        <Button
-            android:id="@+id/btnSave"
-            style="@style/QueueEase.Button.Primary"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:text="Save Changes" />
+            <com.google.android.material.card.MaterialCardView
+                style="@style/QueueEase.Card.Elevated"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="24dp"
+                app:strokeColor="@color/border_normal"
+                app:strokeWidth="1dp">
 
-        <Button
-            android:id="@+id/btnLogout"
-            style="@style/QueueEase.Button.Danger"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/logout" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="24dp">
 
-    </LinearLayout>
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/tilFirstname"
+                        style="@style/QueueEase.TextInput"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="16dp"
+                        android:hint="First Name">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etFirstname"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="textPersonName"
+                            android:maxLines="1" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/tilLastname"
+                        style="@style/QueueEase.TextInput"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="24dp"
+                        android:hint="Last Name">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/etLastname"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="textPersonName"
+                            android:maxLines="1" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <Button
+                        android:id="@+id/btnSave"
+                        style="@style/QueueEase.Button.Primary"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Save Changes" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <Button
+                android:id="@+id/btnLogout"
+                style="@style/QueueEase.Button.Danger"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/logout" />
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

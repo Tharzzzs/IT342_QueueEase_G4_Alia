@@ -1,150 +1,263 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/gray_50"
-    android:padding="24dp">
+    android:background="@color/gray_50">
 
-    <TextView
-        android:id="@+id/tvTitle"
-        style="@style/QueueEase.Text.PageTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/nav_dashboard"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <LinearLayout
-        android:id="@+id/llNoAssignment"
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:gravity="center"
-        android:orientation="vertical"
-        android:visibility="gone"
-        app:layout_constraintTop_toBottomOf="@id/tvTitle">
-
-        <ImageView
-            android:layout_width="64dp"
-            android:layout_height="64dp"
-            android:src="@android:drawable/ic_dialog_alert"
-            app:tint="@color/amber_500" />
-
-        <TextView
-            style="@style/QueueEase.Text.SectionTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="Not Assigned" />
-
-        <TextView
-            style="@style/QueueEase.Text.Body"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="You have not been assigned to any service center yet. Please contact an administrator."
-            android:textAlignment="center" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/llAssignedContent"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:orientation="vertical"
-        app:layout_constraintTop_toBottomOf="@id/tvTitle">
+        android:background="@color/blue_600"
+        app:elevation="0dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/bg_card"
             android:orientation="vertical"
-            android:padding="24dp">
+            android:paddingHorizontal="@dimen/spacing_xl"
+            android:paddingTop="48dp"
+            android:paddingBottom="32dp"
+            app:layout_scrollFlags="scroll|enterAlways">
 
             <TextView
-                style="@style/QueueEase.Text.SectionLabel"
+                android:id="@+id/tvTitle"
+                style="@style/QueueEase.Text.PageTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="YOUR ASSIGNED CENTER" />
+                android:textColor="@color/white"
+                android:textSize="32sp"
+                android:text="@string/nav_dashboard" />
 
             <TextView
-                android:id="@+id/tvCenterName"
-                style="@style/QueueEase.Text.SectionTitle"
+                android:id="@+id/tvSubtitle"
+                style="@style/QueueEase.Text.Body"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                tools:text="Main Branch" />
+                android:layout_marginTop="@dimen/spacing_xs"
+                android:textColor="@color/blue_100"
+                android:text="Staff Control Panel" />
+        </LinearLayout>
+    </com.google.android.material.appbar.AppBarLayout>
 
-            <com.google.android.material.switchmaterial.SwitchMaterial
-                android:id="@+id/switchStatus"
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/spacing_xl">
+
+            <LinearLayout
+                android:id="@+id/llNoAssignment"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="Accepting New Customers"
-                android:textColor="@color/gray_800"
-                android:textSize="16sp" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:orientation="horizontal"
-            android:baselineAligned="false">
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:background="@drawable/bg_stat_card_amber"
+                android:layout_marginTop="48dp"
+                android:gravity="center"
                 android:orientation="vertical"
-                android:padding="16dp"
-                android:layout_marginEnd="8dp">
+                android:visibility="gone">
+
+                <ImageView
+                    android:layout_width="64dp"
+                    android:layout_height="64dp"
+                    android:src="@drawable/ic_people"
+                    app:tint="@color/gray_400" />
 
                 <TextView
-                    style="@style/QueueEase.Text.Caption"
+                    style="@style/QueueEase.Text.SectionTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Waiting" />
+                    android:layout_marginTop="@dimen/spacing_md"
+                    android:text="Not Assigned" />
 
                 <TextView
-                    android:id="@+id/tvWaitingCount"
-                    style="@style/QueueEase.Text.PageTitle"
+                    style="@style/QueueEase.Text.Body"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:textColor="@color/amber_500"
-                    tools:text="12" />
+                    android:layout_marginTop="@dimen/spacing_sm"
+                    android:text="You have not been assigned to any service center yet. Please contact an administrator."
+                    android:textAlignment="center" />
             </LinearLayout>
 
             <LinearLayout
-                android:layout_width="0dp"
+                android:id="@+id/llAssignedContent"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:background="@drawable/bg_stat_card_green"
-                android:orientation="vertical"
-                android:padding="16dp"
-                android:layout_marginStart="8dp">
+                android:orientation="vertical">
 
-                <TextView
-                    style="@style/QueueEase.Text.Caption"
-                    android:layout_width="wrap_content"
+                <!-- Assigned Center Control Card -->
+                <com.google.android.material.card.MaterialCardView
+                    style="@style/QueueEase.Card.Elevated"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Served Today" />
+                    app:cardBackgroundColor="@color/blue_600"
+                    app:strokeWidth="0dp">
 
-                <TextView
-                    android:id="@+id/tvServedCount"
-                    style="@style/QueueEase.Text.PageTitle"
-                    android:layout_width="wrap_content"
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="24dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical">
+
+                            <ImageView
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:src="@drawable/ic_store"
+                                app:tint="@color/white"
+                                android:layout_marginEnd="@dimen/spacing_sm" />
+
+                            <TextView
+                                style="@style/QueueEase.Text.SectionLabel"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/blue_100"
+                                android:text="YOUR ASSIGNED CENTER" />
+                        </LinearLayout>
+
+                        <TextView
+                            android:id="@+id/tvCenterName"
+                            style="@style/QueueEase.Text.PageTitle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/spacing_sm"
+                            android:textColor="@color/white"
+                            tools:text="Main Branch" />
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:background="@color/blue_700"
+                            android:layout_marginTop="24dp"
+                            android:layout_marginBottom="24dp" />
+
+                        <com.google.android.material.switchmaterial.SwitchMaterial
+                            android:id="@+id/switchStatus"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="Accepting Customers"
+                            android:textColor="@color/white"
+                            android:textStyle="bold"
+                            android:textSize="16sp"
+                            app:thumbTint="@color/white"
+                            app:trackTint="@color/blue_400" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Stats Row -->
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:textColor="@color/green_600"
-                    tools:text="45" />
+                    android:layout_marginTop="@dimen/spacing_md"
+                    android:orientation="horizontal"
+                    android:baselineAligned="false">
+
+                    <com.google.android.material.card.MaterialCardView
+                        style="@style/QueueEase.Card.Elevated"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginEnd="@dimen/spacing_sm"
+                        app:cardBackgroundColor="@color/surface"
+                        app:strokeColor="@color/border_normal"
+                        app:strokeWidth="1dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="20dp">
+
+                            <FrameLayout
+                                android:layout_width="48dp"
+                                android:layout_height="48dp"
+                                android:background="@drawable/bg_icon_circle_amber"
+                                android:layout_marginBottom="@dimen/spacing_sm">
+                                <ImageView
+                                    android:layout_width="24dp"
+                                    android:layout_height="24dp"
+                                    android:layout_gravity="center"
+                                    android:src="@drawable/ic_people"
+                                    app:tint="@color/amber_600" />
+                            </FrameLayout>
+
+                            <TextView
+                                android:id="@+id/tvWaitingCount"
+                                style="@style/QueueEase.Text.HeroNumber"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/gray_900"
+                                tools:text="12" />
+
+                            <TextView
+                                style="@style/QueueEase.Text.SectionLabel"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/spacing_xs"
+                                android:textColor="@color/gray_500"
+                                android:text="WAITING" />
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <com.google.android.material.card.MaterialCardView
+                        style="@style/QueueEase.Card.Elevated"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginStart="@dimen/spacing_sm"
+                        app:cardBackgroundColor="@color/surface"
+                        app:strokeColor="@color/border_normal"
+                        app:strokeWidth="1dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="20dp">
+
+                            <FrameLayout
+                                android:layout_width="48dp"
+                                android:layout_height="48dp"
+                                android:background="@drawable/bg_icon_circle_green"
+                                android:layout_marginBottom="@dimen/spacing_sm">
+                                <ImageView
+                                    android:layout_width="24dp"
+                                    android:layout_height="24dp"
+                                    android:layout_gravity="center"
+                                    android:src="@drawable/ic_check"
+                                    app:tint="@color/green_600" />
+                            </FrameLayout>
+
+                            <TextView
+                                android:id="@+id/tvServedCount"
+                                style="@style/QueueEase.Text.HeroNumber"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/gray_900"
+                                tools:text="45" />
+
+                            <TextView
+                                style="@style/QueueEase.Text.SectionLabel"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/spacing_xs"
+                                android:textColor="@color/gray_500"
+                                android:text="SERVED TODAY" />
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+                </LinearLayout>
             </LinearLayout>
         </LinearLayout>
-    </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
